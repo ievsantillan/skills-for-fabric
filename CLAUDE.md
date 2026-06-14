@@ -118,6 +118,13 @@ https://learn.microsoft.com/en-us/rest/api/fabric/articles/
 - **Data Agent Evaluation**: Testing and validating Data Agent accuracy
   - Docs: https://learn.microsoft.com/en-us/fabric/data-science/fabric-data-agent-sdk
 
+### Well-Architected Framework
+- **Fabric WAF assessment** — score a Fabric tenant, capacity, or workspace against the 5 WAF pillars (Reliability, Security, Cost Optimization, Operational Excellence, Performance Efficiency); read-only evidence gathering; layered markdown report with optional PBIP / PDF / Excel / Word / CSV exports
+  - Docs: https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/
+  - Skill: `skills/fabric-waf/SKILL.md` — modes: `e2e`, `pillar:<name>`, `guidance-only`
+  - Agent: `agents/FabricWAF.agent.md` — 7-phase workflow; delegates tenant/workspace evidence to `FabricAdmin`, item-level evidence to `-consumption-cli` / `-operations-cli` skills; optional PBIP authoring via `powerbi-report-authoring` + `semantic-model-authoring`
+  - Common: `common/FABRIC-WAF-CORE.md` — pillar framework, categorical scoring rubric (Met / Partial / Gap / Not assessed), severity + effort scales, glossary, read-only boundary, Azure WAF relationship
+
 ## Best Practices
 
 ### Must

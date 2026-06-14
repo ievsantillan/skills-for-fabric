@@ -1,0 +1,1 @@
+Do a Security pillar review of my Fabric workspace 'analytics-shared'. Skip the other pillars. Output to WAFAssessmentReport-Security-2026-06-13.

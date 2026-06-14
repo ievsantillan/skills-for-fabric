@@ -115,6 +115,19 @@ rules:
     description: Authoring skill is semantic-model-authoring, consumption skill is semantic-model-consumption
     reference: skills/semantic-model-authoring/SKILL.md
 
+  # Well-Architected Framework
+  - name: waf_skill
+    description: Skill for scoring a Fabric tenant, capacity, or workspace against the 5 WAF pillars; modes e2e, pillar:<name>, guidance-only; read-only assessment with markdown / PBIP / PDF / Excel / Word / CSV exports
+    reference: skills/fabric-waf/SKILL.md
+
+  - name: waf_agent
+    description: Agent that orchestrates the 7-phase WAF assessment workflow; delegates tenant/workspace evidence to FabricAdmin and item-level evidence to -consumption-cli / -operations-cli skills
+    reference: agents/FabricWAF.agent.md
+
+  - name: waf_common
+    description: Common WAF framework body of knowledge - pillar summary, categorical scoring rubric, severity + effort scales, glossary, read-only boundary, Azure WAF relationship
+    reference: common/FABRIC-WAF-CORE.md
+
 best_practices:
   - Use parameterized notebooks and pipelines
   - Implement incremental processing over full refreshes

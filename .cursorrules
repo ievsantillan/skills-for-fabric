@@ -110,6 +110,12 @@ Developers use REST APIs to manage artifacts, then protocol-specific connections
 - Authoring: `skills/powerbi-report-authoring/SKILL.md`
 - Management: `skills/powerbi-report-management/SKILL.md`
 
+### Well-Architected Framework
+- Skill: `skills/fabric-waf/SKILL.md` — score a Fabric tenant, capacity, or workspace against the 5 WAF pillars; modes `e2e`, `pillar:<name>`, `guidance-only`; read-only assessment with markdown / PBIP / PDF / Excel / Word / CSV exports
+- Agent: `agents/FabricWAF.agent.md` — 7-phase assessment workflow; delegates tenant/workspace evidence to `FabricAdmin` and item-level evidence to `-consumption-cli` / `-operations-cli` skills
+- Common: `common/FABRIC-WAF-CORE.md` — pillar framework, categorical scoring rubric (Met / Partial / Gap / Not assessed), severity + effort scales, glossary, read-only boundary, Azure WAF relationship
+- Read-only assessment: no POST/PUT/PATCH/DELETE against Fabric REST or Kusto management endpoints; local PBIP authoring is allowed; Phase 7 publish is opt-in only
+
 ### Data Agents
 - Use Python SDK within Fabric notebooks for rapid prototyping
 - Provide custom instructions for domain-specific terminology

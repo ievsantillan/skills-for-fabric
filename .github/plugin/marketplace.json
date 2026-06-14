@@ -2,7 +2,7 @@
   "name": "fabric-collection",
   "metadata": {
     "description": "Microsoft Skills for Fabric collection for GitHub Copilot CLI",
-    "version": "0.3.3"
+    "version": "0.3.4"
   },
   "owner": {
     "name": "Microsoft",
@@ -13,7 +13,7 @@
       "name": "fabric-skills",
       "source": "./plugins/fabric-skills",
       "description": "Complete bundle: all Microsoft Skills for Fabric for developers and consumers",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/semantic-model-consumption",
@@ -38,13 +38,15 @@
         "./skills/databricks-migration",
         "./skills/synapse-migration",
         "./skills/hdinsight-migration",
-        "./skills/e2e-medallion-architecture"
+        "./skills/e2e-medallion-architecture",
+        "./skills/fabric-waf"
       ],
       "agents": [
         "./agents/FabricAdmin.agent.md",
         "./agents/FabricDataEngineer.agent.md",
         "./agents/FabricAppDev.agent.md",
-        "./agents/FabricIQ.agent.md"
+        "./agents/FabricIQ.agent.md",
+        "./agents/FabricWAF.agent.md"
       ],
       "mcpServers": {
         "FabricIQ": {
@@ -82,7 +84,7 @@
       "name": "skills-for-fabric",
       "source": "./plugins/fabric-skills",
       "description": "[DEPRECATED ALIAS of fabric-skills@fabric-collection \u2014 pre-0.3.0 users only; new installs should use fabric-skills.] Complete bundle: all Microsoft Skills for Fabric for developers and consumers",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/semantic-model-consumption",
@@ -107,13 +109,15 @@
         "./skills/databricks-migration",
         "./skills/synapse-migration",
         "./skills/hdinsight-migration",
-        "./skills/e2e-medallion-architecture"
+        "./skills/e2e-medallion-architecture",
+        "./skills/fabric-waf"
       ],
       "agents": [
         "./agents/FabricAdmin.agent.md",
         "./agents/FabricDataEngineer.agent.md",
         "./agents/FabricAppDev.agent.md",
-        "./agents/FabricIQ.agent.md"
+        "./agents/FabricIQ.agent.md",
+        "./agents/FabricWAF.agent.md"
       ],
       "mcpServers": {
         "FabricIQ": {
@@ -151,7 +155,7 @@
       "name": "fabric-authoring",
       "source": "./plugins/fabric-authoring",
       "description": "Developer skills for authoring Microsoft Skills for Fabric solutions - SDKs, APIs, automation scripts, CI/CD",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/sqldw-authoring-cli",
@@ -186,7 +190,7 @@
       "name": "fabric-consumption",
       "source": "./plugins/fabric-consumption",
       "description": "Consumer skills for interactive Microsoft Skills for Fabric operations - queries, exploration, monitoring",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/semantic-model-consumption",
@@ -197,13 +201,15 @@
         "./skills/eventstream-consumption-cli",
         "./skills/activator-consumption-cli",
         "./skills/dataflows-consumption-cli",
-        "./skills/search-consumption-cli"
+        "./skills/search-consumption-cli",
+        "./skills/fabric-waf"
       ],
       "agents": [
         "./agents/FabricAdmin.agent.md",
         "./agents/FabricDataEngineer.agent.md",
         "./agents/FabricAppDev.agent.md",
-        "./agents/FabricIQ.agent.md"
+        "./agents/FabricIQ.agent.md",
+        "./agents/FabricWAF.agent.md"
       ],
       "mcpServers": {
         "FabricIQ": {
@@ -236,16 +242,18 @@
       "name": "fabric-operations",
       "source": "./plugins/fabric-operations",
       "description": "Operations skills for diagnosing Microsoft Fabric performance and health - system views, multi-step investigation workflows",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/sqldw-operations-cli",
-        "./skills/spark-operations-cli"
+        "./skills/spark-operations-cli",
+        "./skills/fabric-waf"
       ],
       "agents": [
         "./agents/FabricAdmin.agent.md",
         "./agents/FabricDataEngineer.agent.md",
-        "./agents/FabricAppDev.agent.md"
+        "./agents/FabricAppDev.agent.md",
+        "./agents/FabricWAF.agent.md"
       ],
       "mcpServers": {},
       "repository": "https://github.com/microsoft/skills-for-fabric",
@@ -263,7 +271,7 @@
       "name": "powerbi-authoring",
       "source": "./plugins/powerbi-authoring",
       "description": "Developer skills for authoring Microsoft Power BI solutions.",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "skills": [
         "./skills/check-updates",
         "./skills/semantic-model-authoring",

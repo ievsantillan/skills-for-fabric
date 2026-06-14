@@ -24,6 +24,10 @@ __pycache__/
 .env
 .env.local
 
+# Fabric WAF assessment reports -- may contain PII (UPNs, secrets, capacity GUIDs, item names)
+WAFAssessmentReport-*/
+WAFAssessmentReport/
+
 # Eval test results -- individual per-skill detail files
 # Only the merged summary (eval-results.md) and regression_analysis.md are tracked
 tests/full-eval-tests/result/eval-*-results.md

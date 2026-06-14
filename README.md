@@ -46,7 +46,7 @@ You can also filter the full bundle by workload:
 | `fabric-consumption` | Read-only exploration and query workflows across Warehouses, Lakehouses, Power BI semantic models, Eventhouse/KQL databases, Eventstreams, Dataflows Gen2, and catalog search. |
 | `fabric-operations` | Performance and health diagnostics, including warehouse query insights and slow-query investigation. |
 
-The full bundle includes skills for SQL data warehouse, Spark and Lakehouse, Power BI semantic models, Eventhouse and KQL, Eventstreams, Dataflows Gen2, catalog search, migration scenarios, and medallion architecture workflows.
+The full bundle includes skills for SQL data warehouse, Spark and Lakehouse, Power BI semantic models, Eventhouse and KQL, Eventstreams, Dataflows Gen2, catalog search, migration scenarios, medallion architecture workflows, and a Microsoft Fabric Well-Architected Framework (WAF) assessment skill plus orchestration agent covering all 5 pillars.
 
 See [CHANGELOG.md](CHANGELOG.md) for public release notes.
 

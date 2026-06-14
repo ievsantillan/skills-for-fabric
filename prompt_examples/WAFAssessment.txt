@@ -1,0 +1,1 @@
+Run an end-to-end Microsoft Fabric Well-Architected Framework assessment on my Fabric capacity 'F64-prod' and workspace 'finance-prod'. Output to WAFAssessmentReport-2026-06-13 with standard detail. Include a PBIP export but do not publish it.

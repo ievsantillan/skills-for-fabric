@@ -71,6 +71,11 @@ Fabric REST APIs: https://learn.microsoft.com/en-us/rest/api/fabric/articles/
 - Consumption skill: `skills/semantic-model-consumption/SKILL.md` — raw DAX queries against semantic models via MCP ExecuteQuery tool
 - FabricIQ skill: `skills/fabriciq/SKILL.md` — multi-step Power BI data analysis (discover, inspect, resolve, generate, execute)
 
+### Well-Architected Framework
+- Skill: `skills/fabric-waf/SKILL.md` — score a Fabric tenant, capacity, or workspace against the 5 WAF pillars; modes `e2e`, `pillar:<name>`, `guidance-only`; read-only assessment with markdown / PBIP / PDF / Excel / Word / CSV exports
+- Agent: `agents/FabricWAF.agent.md` — 7-phase assessment workflow; delegates tenant/workspace evidence to `FabricAdmin` (new agent-to-agent delegation convention) and item-level evidence to `-consumption-cli` / `-operations-cli` skills
+- Common: `common/FABRIC-WAF-CORE.md` — pillar framework, categorical scoring rubric, severity + effort scales, glossary, read-only boundary, Azure WAF relationship
+
 ## Constraints
 
 ### Must
