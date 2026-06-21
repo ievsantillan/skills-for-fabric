@@ -122,6 +122,7 @@ See `references/assessment-workflow.md` for the full 7-phase workflow. Summary:
 
 ### MUST DO
 
+- **Evidence-first; interview only as fallback**: gather hard evidence from APIs/queries (Fabric REST, DAX against the Capacity Metrics App, notebook `getDefinition`, Graph, Cost Management) before asking the user anything. Use interview answers only for items that genuinely cannot be obtained from a system, and label those findings' evidence source as `interview` so they are distinguishable from API-verified ones.
 - **Source-bound: never invent facts**: only use Microsoft Learn content, evidence returned by delegate skills, and the user's own input. When ground truth is unknown, score the principle as `Not assessed` and document why.
 - **Re-fetch Microsoft Learn pages before authoring or updating any pillar reference**: verify against the live page; bump the `<!-- VERIFIED: YYYY-MM-DD against <URL> -->` stamp.
 - **Cite Learn by verbatim heading text, not slugified anchor**: Microsoft re-slugs occasionally.

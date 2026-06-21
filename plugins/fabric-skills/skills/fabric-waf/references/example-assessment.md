@@ -6,9 +6,45 @@ A worked snippet of a Fabric WAF assessment focused on the **evidence-gathering 
 
 ---
 
-## Capacity Metrics App: top-consuming items (KQL)
+## Capacity Metrics App: query via DAX (verified 2026-06-21)
 
-Run from the Capacity Metrics App workspace. Returns the top operations by CU usage in the last 24 hours for one capacity.
+The Fabric Capacity Metrics App is a **Power BI semantic model**, not a KQL database. Query it
+with **DAX through the Power BI `executeQueries` REST API**. (The KQL snippets further below are
+illustrative only and were not verified against a live model; prefer this DAX path.)
+
+```powershell
+# 1) Find the model: list items in the "Microsoft Fabric Capacity Metrics" workspace,
+#    filter type == SemanticModel, take its id.
+# 2) Query it (token audience: https://analysis.windows.net/powerbi/api):
+$ds = "<capacity-metrics-semantic-model-id>"
+$pt = az account get-access-token --resource "https://analysis.windows.net/powerbi/api" --query accessToken -o tsv
+$H  = @{ Authorization = "Bearer $pt"; "Content-Type" = "application/json" }
+function DAX($q) {
+  $body = @{ queries = @(@{ query = $q }) } | ConvertTo-Json -Depth 6
+  (Invoke-RestMethod -Method POST -Headers $H -Body $body `
+    -Uri "https://api.powerbi.com/v1.0/myorg/datasets/$ds/executeQueries").results[0].tables[0].rows
+}
+
+DAX 'EVALUATE INFO.VIEW.TABLES()'                # schema discovery (~105 tables)
+DAX 'EVALUATE Capacities'                        # SKU + state per capacity (import table)
+DAX "EVALUATE FILTER('Items Throttled', 'Items Throttled'[Capacity Id]=""<CAP-GUID-UPPER>"")"
+```
+
+Verified facts:
+- Import-mode tables (`Capacities`, `Items Throttled`) query reliably. **DirectQuery** detail
+  tables (`Metrics By Item And Day`, `Usage Summary (Last 14 days)`, `Surge Protection By Day`)
+  return `Error obtaining data location` when the capacity is **paused** — so live CU% needs the
+  capacity resumed and the model refreshed.
+- `Capacity Id` in `Items Throttled` is UPPERCASE.
+- The Metrics App is itself a periodically-refreshed model: its SKU/state can lag the live
+  capacity (we observed F16 in the model vs F64 live). Cross-check SKU against `GET /v1/capacities`
+  and stamp the model's data recency.
+
+---
+
+## Capacity Metrics App: top-consuming items (KQL — illustrative only, unverified)
+
+> The KQL blocks in this section are illustrative pseudo-queries and were **not** verified against a live model. The Metrics App is a Power BI semantic model: prefer the verified DAX recipe above. These remain as a conceptual reference for the kind of data available.
 
 ```kusto
 MetricsByItemAndOperationAndDay

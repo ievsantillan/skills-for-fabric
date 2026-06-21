@@ -21,7 +21,7 @@ META = {
 }
 # (pillar key, display name, icon file, Met, Partial, Gap)
 PILLARS = [
-    ("reliability", "Reliability", "reliability.svg", 0, 6, 3),
+    ("reliability", "Reliability", "reliability.svg", 0, 5, 4),
     ("security", "Security", "security.svg", 1, 5, 4),
     ("cost-optimization", "Cost Optimization", "cost-optimization.svg", 1, 5, 0),
     ("performance-efficiency", "Performance Efficiency", "performance-efficiency.svg", 0, 4, 2),

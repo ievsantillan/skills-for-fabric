@@ -81,7 +81,17 @@ Dry-run a tiny FabricAdmin delegation: "list workspaces in capacity `<ID>`, retu
 
 ## Phase 3: Evidence gathering
 
+**Evidence-first is mandatory.** Gather hard evidence via APIs/queries before asking the user anything. Interview answers are a documented *fallback*, used only for items that genuinely cannot be obtained from a system (e.g. undocumented org processes, or data behind a paused/unavailable resource). When you do fall back to an interview answer, label that principle's evidence source as `interview` so the report distinguishes it from API-verified findings. Never ask the user for something an API can return.
+
 Cascade pattern: framework knowledge here → tenant/workspace evidence via FabricAdmin → item-level evidence via `-consumption-cli` and `-operations-cli` skills.
+
+Concrete evidence sources to try before interviewing (non-exhaustive):
+
+- **Capacity Metrics App** (CU utilization, throttling, SKU): query its semantic model with **DAX via the Power BI `executeQueries` API** (see `references/example-assessment.md` for the verified recipe). It is a Power BI model, not a KQL database.
+- **Secret-in-code** / retry / idempotency claims: fetch notebook and pipeline definitions (`POST .../items/{id}/getDefinition`) and inspect them, rather than asking.
+- **RBAC, tenant settings, Git, workspace identity, deployment pipelines**: Fabric REST.
+- **PIM, Conditional Access, audit logs, sensitivity labels**: Microsoft Graph (Graph PowerShell for PIM/labels; see the evidence-checklist tooling note).
+- **Cost**: Azure Cost Management (actuals) and the Retail Prices API (estimates).
 
 ### Routing
 
