@@ -104,7 +104,7 @@ Microsoft Learn does not prescribe severity or effort scales. These are our defa
 
 ## Presentation conventions
 
-- **Always attach an explicit currency code to every monetary value** (e.g. `1,564.89 USD`, not `$1,564.89`). Customers are global and may bill in different currencies. Source the currency from the data itself: Azure Cost Management returns a `Currency` column, and `GET /v1.0/subscribedSkus` / billing APIs expose the billing currency. Never assume USD; if the currency is unknown, state that explicitly rather than implying one with a bare `$`.
+- **Always attach an explicit currency code to every monetary value** (e.g. `1,564.89 USD`, not `$1,564.89`). Customers are global and may bill in different currencies. Source the currency from the data itself: Azure Cost Management returns a `Currency` column, and `GET /v1.0/subscribedSkus` / billing APIs expose the billing currency. Never assume USD; if the currency is unknown, state that explicitly rather than implying one with a bare `$`. **Do not FX-convert actual billed amounts** (they would match no invoice and drift daily); for target-currency *estimates*, use the Azure Retail Prices API `currencyCode` parameter. Full guidance: `skills/fabric-waf/references/cost-optimization.md` § Currency handling.
 
 ---
 

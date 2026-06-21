@@ -73,10 +73,28 @@ Account for future growth: ingestion volume, query concurrency, retention, multi
 
 > **Important (from Learn)**: Design decisions directly affect cost. Run a small PoC with representative workloads before committing to SKU. Consider shortcuts for in-place data sharing, minimize unnecessary data movement, align with smoothing.
 
+#### Currency handling
+
+Customers are global and bill in different currencies. Handle currency by source, and **never FX-convert actual billed amounts**:
+
+| Need | Source | Currency behavior |
+|---|---|---|
+| **Actual spend** (what was billed) | Azure Cost Management (`POST .../CostManagement/query`) | Returns the tenant's **billing currency** in a `Currency` column. Report it as-is (e.g. `1,564.89 USD`, `1,210.40 EUR`). It already matches the customer's invoice; no conversion. |
+| **Forward-looking estimates** (e.g. "what would F64->F32 save in EUR?") | [Azure Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices) `prices.azure.com/api/retail/prices?currencyCode='EUR'` | Returns **Microsoft's native per-currency list price** for the meter (verified: Fabric CU/hr = 0.2574 USD vs 0.2214 EUR vs 41.0566 JPY). These are published list prices, not USD x FX. Use this for capacity right-sizing math in the target currency. |
+| **Restate observed costs in a different display currency** (rare; e.g. a global team consolidating a EUR tenant into USD reporting) | Explicit, opt-in only | Keep the original billing-currency value as source of truth and show it alongside. Label the converted value `indicative, converted at <rate> on <date>, source <X>` using a documented, dated FX reference (e.g. an ECB/central-bank rate). Never replace the billed number. |
+
+Must / Avoid:
+
+- **Do** take actuals from Cost Management in the billing currency and always print the currency code.
+- **Do** query the Retail Prices API with `currencyCode` for target-currency estimates (supported, public, no auth).
+- **Avoid** scraping the Azure Pricing Calculator for exchange rates: it is a UI with no documented FX/exchange-rate API; the result is fragile, unsupported, and drifts daily.
+- **Avoid** FX-converting billed amounts by default: a converted figure matches no invoice and changes every day, which undermines an auditable point-in-time assessment.
+
 #### Use cost estimation tools
 
 - [Microsoft Fabric Capacity Estimator](https://www.microsoft.com/microsoft-fabric/capacity-estimator)
-- [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/)
+- [Azure Pricing Calculator](https://azure.microsoft.com/pricing/calculator/) (UI only; not a programmatic price/FX source)
+- [Azure Retail Prices API](https://learn.microsoft.com/en-us/rest/api/cost-management/retail-prices/azure-retail-prices) (programmatic per-currency list prices via `currencyCode`)
 - [Microsoft Cost Management and Billing](https://learn.microsoft.com/en-us/azure/cost-management-billing/)
 - [Fabric cost analysis tools](https://github.com/microsoft/fabric-toolbox/tree/main/monitoring/fabric-cost-analysis): open-source accelerator
 
