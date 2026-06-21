@@ -4,13 +4,20 @@ Consolidated per-pillar evidence items the assessment gathers. Each item is tagg
 
 > The complete principle-by-principle deep dive lives in each pillar reference. Use this file for delegation routing and scoping during Phase 3 (evidence gathering) of the assessment workflow.
 
+> **Not available via the Fabric public REST API (as of this writing).** The following evidence requires the **Capacity Metrics App** (a Power BI semantic model, queried via DAX) or the **Fabric Admin portal**, not `az rest` against the Fabric REST API. Attempting `GET /v1/admin/capacities` for these returns 404 in some tenants. If you cannot reach those surfaces, mark the item `Not assessed` with the reason, or delegate to `FabricAdmin` (which may query the Metrics App semantic model). Do not infer a value:
+>
+> - Live smoothed CU utilization, throttling, and overage history: **Capacity Metrics App**
+> - OneLake disaster-recovery (DR) toggle per capacity: **Admin portal** (capacity settings)
+> - Surge protection settings per capacity / workspace: **Admin portal** (capacity settings)
+> - Workspace Monitoring enablement status: **Workspace settings** (no public REST field found)
+
 ---
 
 ## Reliability
 
 - [ ] Capacity + workspace + quota inventory: `[FabricAdmin]`
 - [ ] Throttling / overage history (last 14 days): `[Capacity Metrics App]`
-- [ ] OneLake DR configuration per capacity: `[FabricAdmin]` / REST
+- [ ] OneLake DR configuration per capacity: `[FabricAdmin]` / Admin portal (not in public REST)
 - [ ] Pipeline retry / idempotency code review: `[spark-operations-cli]`, `[dataflows-consumption-cli]`
 - [ ] Documented SLOs / SLIs per workload: `[user-interview]`
 - [ ] Surge protection settings per capacity / workspace: `[FabricAdmin]`

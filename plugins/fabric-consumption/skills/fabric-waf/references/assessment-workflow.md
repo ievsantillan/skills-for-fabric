@@ -41,6 +41,8 @@ previous_assessment_folder: <path or null>  # if set, triggers re-assessment / d
 
 Render as a fillable checklist. Do not proceed to Phase 2 until the user has confirmed the scope block.
 
+> **Define acronyms and jargon inline when interviewing.** The audience often includes non-architects (capacity admins, executive sponsors) who may not know the shorthand. On first use, expand terms before asking the question: for example RTO (Recovery Time Objective: how long the workload can be down before it must be restored), RPO (Recovery Point Objective: how much recent data, measured in time, can be lost), SLO / SLI, and idempotent (safe to re-run without creating duplicate or corrupted data). The glossary in `common/FABRIC-WAF-CORE.md` is the source of truth for definitions.
+
 ---
 
 ## Phase 2: Pre-flight
