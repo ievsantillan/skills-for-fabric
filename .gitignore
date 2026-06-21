@@ -28,6 +28,9 @@ __pycache__/
 WAFAssessmentReport-*/
 WAFAssessmentReport/
 
+# Playwright MCP scratch dir (snapshots, console logs, browser downloads)
+.playwright-mcp/
+
 # Eval test results -- individual per-skill detail files
 # Only the merged summary (eval-results.md) and regression_analysis.md are tracked
 tests/full-eval-tests/result/eval-*-results.md

@@ -1,0 +1,16 @@
+Azure Well-Architected Review - <date>,,,,,
+,,,,,
+Recommendations for your workload,,,,,
+Your overall results,Excellent,'0/0',,,
+,,,,,
+,,,,,
+Learn about discounts.,https://learn.microsoft.com/azure/well-architected/cost-optimization/get-best-rates#evaluate-and-commit-to-available-discounts,,,,
+Learn about data classification.,https://learn.microsoft.com/azure/well-architected/security/data-classification#define-the-classification-scope,,,,
+Learn about safe deployment practices.,https://learn.microsoft.com/azure/well-architected/operational-excellence/safe-deployments#key-design-strategies,,,,
+,,,,,
+Category,Link-Text,Link,Priority,ReportingCategory,ReportingSubcategory,Weight,Context,CompleteY/N,Note
+-----------,,,,,
+,,,,,
+Category,Question,Answers,Selected Answer,Note
+Reliability,How do you keep the workload simple and efficient?,We have a deliberate goal to keep our workload simple.,,,
+Reliability,How do you keep the workload simple and efficient?,We utilize platform functionality where appropriate.,,,

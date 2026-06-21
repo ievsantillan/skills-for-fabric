@@ -2,6 +2,34 @@
 
 Markdown is the always-generated default. The formats below are additive, selected via `output.export_formats` in the intake template. **The skill teaches the conversion: the user runs it.** No code is shipped or executed by the skill itself.
 
+## Prerequisites by format (install only what you select)
+
+Markdown needs nothing. Each additional format has its own dependencies; install only those for the formats you requested in the intake. Run the pre-export check below and fail fast with the install hint if a tool is missing.
+
+| Format | Requires | Install | System dependency? |
+|---|---|---|---|
+| Markdown | (none) | n/a | no |
+| CSV | `pandas` | `pip install pandas` | no |
+| Excel | `pandas`, `openpyxl` | `pip install pandas openpyxl` | no |
+| Word | `python-docx` | `pip install python-docx` | no (pandoc-free path) |
+| PDF | `pandoc` + `wkhtmltopdf` | `winget install JohnMacFarlane.Pandoc wkhtmltopdf.wkhtmltox` | yes |
+| PBIP | (none beyond text file writes) | n/a | no |
+
+```python
+# Pre-export tool check: fail fast with the exact install hint before generating.
+import importlib.util, shutil
+need = {
+    "csv":   [("pandas", "pip install pandas")],
+    "excel": [("pandas", "pip install pandas"), ("openpyxl", "pip install openpyxl")],
+    "word":  [("docx", "pip install python-docx")],
+}
+selected = ["csv", "excel", "word"]  # set to output.export_formats
+missing = [hint for fmt in selected for mod, hint in need.get(fmt, []) if importlib.util.find_spec(mod) is None]
+if "pdf" in selected and not shutil.which("pandoc"):
+    missing.append("winget install JohnMacFarlane.Pandoc wkhtmltopdf.wkhtmltox")
+assert not missing, "Missing export tooling:\n  " + "\n  ".join(sorted(set(missing)))
+```
+
 ---
 
 ## Tier 1 (always documented)
@@ -83,7 +111,42 @@ df = pd.read_html(markdown.markdown(text, extensions=["tables"]))[0]
 df.to_csv(r"WAFAssessmentReport-2026-06-13\recommendations.csv", index=False)
 ```
 
-> This CSV uses an **original clean schema** matching the recommendation format defined in `common/FABRIC-WAF-CORE.md`. We do not claim it mirrors the Microsoft Well-Architected Review online tool's export: that tool's export format was not verified at planning time.
+> This CSV uses an **original clean schema** matching the recommendation format defined in `common/FABRIC-WAF-CORE.md`. It is intentionally a single actionable backlog, not a copy of the Microsoft Well-Architected Review (WAR) online tool's export (see the comparison below).
+
+### Relationship to the Azure WAR tool export (verified 2026-06-21)
+
+The Microsoft Azure WAR online tool ([assessment](https://learn.microsoft.com/en-us/assessments/azure-architecture-review/)) also exports CSV. We verified an actual export; a sanitized sample is at `references/samples/war-export-sample.csv`. Key facts:
+
+- The WAR export is a **multi-section CSV**, not a flat table. It stacks: a title row, an "Your overall results" row, a few summary links, then **two differently-shaped sections** with their own header rows:
+  - **Recommendations section** header: `Category, Link-Text, Link, Priority, ReportingCategory, ReportingSubcategory, Weight, Context, CompleteY/N, Note`
+  - **Answers section** header: `Category, Question, Answers, Selected Answer, Note`
+- It is **Azure-wide and self-reported** (one row per WAF questionnaire answer/link), not evidence-bound to a tenant. Microsoft documents importing it into Azure DevOps via a PowerShell script ([aka.ms/waf/implementation](https://aka.ms/waf/implementation)).
+
+Our `recommendations.csv` is a deliberately different artifact: **one row per concrete, evidence-bound remediation** with `Severity`, `Effort`, `Owner`, `Pillars`, `Status`, ready for a backlog tool. We do **not** claim parity, because the two serve different purposes (actionable Fabric remediation backlog vs Azure-wide questionnaire link list).
+
+#### Optional WAR-compatible projection
+
+If the user wants to merge/diff our output alongside a real WAR export, emit a second CSV that maps our rows onto the WAR **Recommendations** header. This is a lossy projection (it drops Severity/Effort/Owner/Status):
+
+```python
+import pandas as pd
+df = pd.read_csv(r"WAFAssessmentReport-2026-06-13\recommendations.csv")
+war = pd.DataFrame({
+    "Category": df["Pillars"],
+    "Link-Text": df["Recommendation"],
+    "Link": df.get("learn_citation_url", ""),  # the Learn pillar URL for the principle
+    "Priority": df["Severity"],
+    "ReportingCategory": df["Principle"],
+    "ReportingSubcategory": "",
+    "Weight": "",
+    "Context": df["Recommendation"],
+    "CompleteY/N": df["Status"].map(lambda s: "Y" if str(s).lower() in ("done","risk accepted") else "N"),
+    "Note": df.get("Evidence", ""),
+})
+war.to_csv(r"WAFAssessmentReport-2026-06-13\recommendations-war-compatible.csv", index=False)
+```
+
+> The projection matches the WAR **Recommendations** header verbatim so a downstream script (e.g. the Azure DevOps importer) can consume it. It does not reproduce the WAR Answers section: our assessment is evidence-driven, not questionnaire-driven.
 
 ---
 
