@@ -150,5 +150,5 @@ This makes the assessment auditable and supports the re-assessment / diff workfl
 
 - `common/FABRIC-WAF-CORE.md`: scoring rubric, recommendation format, glossary
 - `references/assessment-workflow.md`: phases that produce this output
-- `references/export-formats.md`: alternate formats (PDF / Excel / Word / CSV / PBIP)
+- `references/export-formats.md`: alternate formats (HTML / Excel / Word / CSV / PBIP)
 - `references/example-assessment.md`: concrete sample

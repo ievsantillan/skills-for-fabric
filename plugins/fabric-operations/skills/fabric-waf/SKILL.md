@@ -6,7 +6,7 @@ description: >
   Orchestrates: intake + scope, pre-flight permissions and throttling check, evidence gathering
   via FabricAdmin and -cli skills, principle scoring (Met/Partial/Gap/Not assessed), recommendation
   generation with severity + effort + Learn citation, layered markdown report emission, and
-  optional PBIP / PDF / Excel / Word / CSV exports.
+  optional PBIP / HTML / Excel / Word / CSV exports.
   Use when the user wants a WAF-style review of their Fabric tenant, capacity, or workspace, or
   has explicit questions about a specific WAF pillar.
   Triggers: "WAF", "well-architected", "well-architected framework", "pillar review",
@@ -64,7 +64,7 @@ Notes:
 | Assessment workflow | [references/assessment-workflow.md](./references/assessment-workflow.md) | 7 phases incl. intake, pre-flight, sampling, redaction, failure recovery, re-assessment diff |
 | Report template | [references/assessment-report-template.md](./references/assessment-report-template.md) | Layered folder + per-principle block format |
 | Evidence checklist | [references/evidence-checklist.md](./references/evidence-checklist.md) | Per-pillar at-a-glance index with source tags |
-| Export formats | [references/export-formats.md](./references/export-formats.md) | PDF / Excel / Word / CSV; PBIP via [references/export-pbip.md](./references/export-pbip.md) |
+| Export formats | [references/export-formats.md](./references/export-formats.md) | HTML / Excel / Word / CSV; PBIP via [references/export-pbip.md](./references/export-pbip.md) |
 | Monitoring accelerators | [references/monitoring-accelerators.md](./references/monitoring-accelerators.md) | Five Fabric Toolbox monitoring solutions + "which to use when" + pillar mapping |
 | Concrete example queries | [references/example-assessment.md](./references/example-assessment.md) | KQL + T-SQL + REST samples |
 | Must/Prefer/Avoid | [SKILL.md § Must/Prefer/Avoid](#mustpreferavoid) | Guardrails: read this in full |
@@ -89,7 +89,7 @@ Notes:
 Optional export knob:
 
 - `output.export_formats: [markdown]` (default): markdown layered folder only
-- `output.export_formats: [markdown, pdf]`: also generate PDF
+- `output.export_formats: [markdown, html]`: also generate a self-contained HTML report
 - `output.export_formats: [markdown, excel, csv, word]`: also generate Excel / CSV / Word
 - `output.export_formats: [markdown, pbip]`: also generate PBIP (Tier 1.5; see `references/export-pbip.md`)
 - `output.publish_to_fabric: true`: Phase 7 publish step (off by default; explicit per-session confirmation required)
@@ -115,7 +115,7 @@ See `references/assessment-workflow.md` for the full 7-phase workflow. Summary:
 3. **Evidence gathering**: cascade: FabricAdmin for tenant/workspace; `-cli` skills for item-level; sample with documented criteria when item count > 50
 4. **Scoring**: per principle: Met / Partial / Gap / Not assessed
 5. **Recommendations**: severity + effort + Learn citation + Fabric feature; dedup across pillars
-6. **Report emission (local)**: markdown layered folder always; optional PDF / Excel / Word / CSV / PBIP
+6. **Report emission (local)**: markdown layered folder always; optional HTML / Excel / Word / CSV / PBIP
 7. **Publish (optional)**: explicit per-session confirmation required; delegates to `powerbi-report-management`
 
 ## Must/Prefer/Avoid
@@ -137,7 +137,7 @@ See `references/assessment-workflow.md` for the full 7-phase workflow. Summary:
 - **Delegate over re-implement**: FabricAdmin for tenant/workspace evidence; `-consumption-cli` / `-operations-cli` for item-level. Do not duplicate their work.
 - **Standard per-principle detail** (Finding · Evidence · Score · Recommendation · Severity · Effort · Owner · Fabric features · Learn citation · Tradeoffs) over terse or verbose variants.
 - **Layered folder report** over single-file output: supports drill-down and re-assessment diff.
-- **Markdown first, additive exports**: PDF / Excel / Word / CSV / PBIP are derived from the markdown.
+- **Markdown first, additive exports**: HTML / Excel / Word / CSV / PBIP are derived from the markdown.
 
 ### AVOID
 

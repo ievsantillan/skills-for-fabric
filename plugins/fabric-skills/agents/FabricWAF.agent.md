@@ -7,7 +7,7 @@ description: >
   evidence gathering via FabricAdmin and -consumption-cli / -operations-cli skills, principle
   scoring (Met/Partial/Gap/Not assessed), recommendation generation with severity + effort +
   Microsoft Learn citation, layered markdown report emission to a date-stamped folder, and
-  optional PBIP / PDF / Excel / Word / CSV exports.
+  optional PBIP / HTML / Excel / Word / CSV exports.
   Use this agent when the request involves: (1) a Well-Architected review of a Fabric tenant,
   capacity, or workspace; (2) a single-pillar review (reliability / security / cost /
   operational excellence / performance); (3) re-assessment producing a diff against a previous
@@ -51,7 +51,7 @@ Use this agent for cross-cutting Fabric architecture reviews that span multiple 
 - Coordinate evidence gathering across `FabricAdmin` and the appropriate `-consumption-cli` / `-operations-cli` skills
 - Score each WAF principle against the rubric in `common/FABRIC-WAF-CORE.md`
 - Generate a dedup'd recommendations backlog with severity, effort, owner, and Microsoft Learn citation
-- Emit a date-stamped layered report folder, optionally with PBIP / PDF / Excel / Word / CSV companions
+- Emit a date-stamped layered report folder, optionally with PBIP / HTML / Excel / Word / CSV companions
 - Run optional Phase 7 publish only with explicit per-session user confirmation
 
 ## WAF Assessment Framework
@@ -95,7 +95,7 @@ Read `common/FABRIC-WAF-CORE.md` and the relevant `skills/fabric-waf/references/
 ### Phase 6: Report emission (local)
 
 - Always emit the markdown layered folder under the target name (default `WAFAssessmentReport-YYYY-MM-DD/`)
-- Optionally generate PDF / Excel / Word / CSV per `skills/fabric-waf/references/export-formats.md`
+- Optionally generate HTML / Excel / Word / CSV per `skills/fabric-waf/references/export-formats.md`
 - Optionally generate the PBIP project per `skills/fabric-waf/references/export-pbip.md` (delegates to `powerbi-report-authoring` and `semantic-model-authoring`; local-only authoring)
 - If re-assessment, also write `diff-vs-<prev-date>.md` comparing pillar scores and recommendation churn
 - **Exit criterion**: report folder exists, README has the assessment_version stamp, `evidence/` has been redaction-passed
@@ -170,7 +170,7 @@ User → FabricWAF
 
 - **Delegate over re-implement**: FabricAdmin already covers RBAC, audit log, capacity health, secrets, tagging
 - **Layered folder reports** over single-file output: supports drill-down and re-assessment diff
-- **Markdown first, additive exports**: PDF / Excel / Word / CSV / PBIP are derived from the markdown source
+- **Markdown first, additive exports**: HTML / Excel / Word / CSV / PBIP are derived from the markdown source
 - **Sampling with documented criteria** over best-effort full coverage on large tenants
 - **Verbatim Learn heading text citations** over slugified anchors: survives Microsoft re-slugging
 

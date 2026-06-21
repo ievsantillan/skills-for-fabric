@@ -1,0 +1,120 @@
+/* Fabric WAF HTML report stylesheet.
+   Aligned to Microsoft Learn WAF visual tokens (verified from the live page 2026-06-21:
+   accent #0F6CBD, text #161616, Segoe UI). Fixes pandoc's narrow-body overflow so the
+   10-column recommendations backlog wraps instead of clipping, and adds a branded banner,
+   an overall-results gauge, and pillar scorecard cards modeled on the Azure WAR results UI. */
+
+:root {
+  --waf-accent: #0F6CBD;       /* Microsoft Learn link/accent blue */
+  --waf-accent-dark: #2f5496;
+  --waf-text: #161616;
+  --waf-border: #cbd2de;
+  --waf-bg-soft: #f7f9fc;
+  --waf-crit: #d13438;
+  --waf-mod: #f7a900;
+  --waf-exc: #107c10;
+}
+
+html { font-size: 15px; }
+
+body {
+  max-width: 1400px;            /* override pandoc's ~36em default that clipped wide tables */
+  margin: 0 auto 3rem;
+  padding: 0 1.5rem;
+  font-family: "Segoe UI", "Segoe UI Variable Text", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.55;
+  color: var(--waf-text);
+}
+
+a { color: var(--waf-accent); }
+code { background: #f3f3f3; padding: .1em .3em; border-radius: 3px; font-size: .9em; }
+
+/* ---------- Banner ---------- */
+.report-banner {
+  text-align: center;
+  background: linear-gradient(180deg, #eef4fb 0%, #ffffff 100%);
+  border-bottom: 3px solid var(--waf-accent);
+  border-radius: 0 0 10px 10px;
+  padding: 1.75rem 1rem 1.25rem;
+  margin: 0 -1.5rem 1.5rem;
+}
+.report-banner .banner-img { max-width: 660px; width: 100%; height: auto; }
+.report-banner-caption { margin-top: .75rem; font-size: 1.3rem; font-weight: 600; color: var(--waf-accent-dark); }
+.report-meta { margin-top: .35rem; font-size: .9rem; color: #444; }
+
+/* ---------- Executive results ---------- */
+.exec-results { margin-bottom: 2.5rem; }
+.exec-title { font-size: 1.35rem; color: var(--waf-accent-dark); margin: 1.5rem 0 .75rem; border: 0; }
+
+.overall-card {
+  background: var(--waf-bg-soft);
+  border: 1px solid #dde3ee;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+}
+.overall-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+.overall-gauge { flex: 1 1 320px; min-width: 260px; }
+.overall-num { text-align: right; min-width: 90px; }
+.overall-num .big { font-size: 2.1rem; font-weight: 700; }
+.overall-num .den { font-size: 1rem; color: #555; }
+.overall-num .counts-line { font-size: .75rem; color: #555; margin-top: .2rem; }
+.index-note { font-size: .72rem; color: #666; margin: .9rem 0 0; }
+
+/* ---------- Gauge (red -> amber -> green with marker) ---------- */
+.gauge-bar {
+  position: relative;
+  height: 14px;
+  border-radius: 7px;
+  background: linear-gradient(to right,
+    #f1bcbd 0%, #f1bcbd 33%,
+    #fbe2a6 33%, #fbe2a6 67%,
+    #bfe3bf 67%, #bfe3bf 100%);
+}
+.gauge.mini .gauge-bar { height: 10px; border-radius: 5px; }
+.gauge-marker {
+  position: absolute; top: -4px; width: 3px; height: 22px;
+  background: var(--waf-text); border-radius: 2px; transform: translateX(-1px);
+}
+.gauge.mini .gauge-marker { top: -3px; height: 16px; }
+.gauge-scale { display: flex; justify-content: space-between; font-size: .68rem; color: #555; margin-top: .3rem; }
+
+/* ---------- Badges ---------- */
+.badge { display: inline-block; padding: .2em .6em; border-radius: 4px; font-size: .72rem; font-weight: 700; letter-spacing: .03em; }
+.badge-lg { font-size: .9rem; padding: .35em .8em; }
+.badge-crit { background: var(--waf-crit); color: #fff; }
+.badge-mod  { background: var(--waf-mod); color: #3a2c00; }
+.badge-exc  { background: var(--waf-exc); color: #fff; }
+
+/* ---------- Pillar cards ---------- */
+.pillar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+.pillar-card {
+  background: #fff; border: 1px solid #dde3ee; border-radius: 8px; padding: 1rem 1.1rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+}
+.pillar-card-head { display: flex; align-items: center; gap: .6rem; margin-bottom: .6rem; }
+.pillar-icon { width: 34px; height: 34px; flex: 0 0 34px; }
+.pillar-card h3 { margin: 0; font-size: 1.02rem; color: var(--waf-accent-dark); }
+.pillar-score { margin-top: .55rem; display: flex; align-items: center; gap: .5rem; }
+.pillar-score .idx { font-weight: 700; font-size: .95rem; }
+.pillar-counts { margin-top: .4rem; font-size: .76rem; color: #555; }
+.pillar-counts .met { color: var(--waf-exc); font-weight: 600; }
+.pillar-counts .gap { color: var(--waf-crit); font-weight: 600; }
+
+/* ---------- Standard report headings ---------- */
+header#title-block-header h1.title { font-size: 1.5rem; color: var(--waf-text); border: 0; }
+h1 { font-size: 1.7rem; border-bottom: 2px solid var(--waf-accent); padding-bottom: .3rem; margin-top: 2.6rem; }
+h2 { font-size: 1.3rem; color: var(--waf-accent-dark); margin-top: 2rem; }
+h3 { font-size: 1.05rem; margin-top: 1.4rem; }
+
+/* ---------- Navigation table of contents ---------- */
+nav#TOC { background: var(--waf-bg-soft); border: 1px solid #dde3ee; border-radius: 6px; padding: 1rem 1.5rem; margin: 1.5rem 0; }
+nav#TOC::before { content: "Contents"; display: block; font-weight: 700; color: var(--waf-accent-dark); margin-bottom: .4rem; }
+
+/* ---------- Tables: full width, fixed layout, wrapping ---------- */
+table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 1rem 0; font-size: .82rem; box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+th, td { border: 1px solid var(--waf-border); padding: 6px 9px; text-align: left; vertical-align: top; overflow-wrap: anywhere; word-break: break-word; }
+thead th { background: var(--waf-accent-dark); color: #fff; font-weight: 600; }
+tbody tr:nth-child(even) { background: #f4f6fa; }
+
+/* ---------- Blockquotes (verdicts, notes) ---------- */
+blockquote { border-left: 4px solid var(--waf-accent); background: var(--waf-bg-soft); margin: 1rem 0; padding: .5rem 1rem; color: #333; }

@@ -31,7 +31,7 @@ mode: <e2e | pillar:<reliability|security|cost-optimization|operational-excellen
 
 output:
   folder: <e.g., WAFAssessmentReport-2026-06-13>
-  export_formats: [markdown]  # add: excel, csv, word, pdf, pbip
+  export_formats: [markdown]  # add: excel, csv, word, html, pbip
   publish_to_fabric: false    # Phase 7 only; off by default
 
 previous_assessment_folder: <path or null>  # if set, triggers re-assessment / diff workflow
@@ -197,6 +197,6 @@ When `intake.previous_assessment_folder` points to an existing `WAFAssessmentRep
 - `common/FABRIC-WAF-CORE.md`: rubric, recommendation format, glossary, boundaries
 - `references/assessment-report-template.md`: output structure + redaction
 - `references/evidence-checklist.md`: per-pillar evidence items
-- `references/export-formats.md`: markdown + PDF/Excel/Word/CSV
+- `references/export-formats.md`: markdown + HTML/Excel/Word/CSV
 - `references/export-pbip.md`: optional PBIP project
 - `references/example-assessment.md`: concrete sample with runnable queries

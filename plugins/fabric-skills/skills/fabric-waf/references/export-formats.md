@@ -12,7 +12,7 @@ Markdown needs nothing. Each additional format has its own dependencies; install
 | CSV | `pandas` | `pip install pandas` | no |
 | Excel | `pandas`, `openpyxl` | `pip install pandas openpyxl` | no |
 | Word | `python-docx` | `pip install python-docx` | no (pandoc-free path) |
-| PDF | `pandoc` + `wkhtmltopdf` | `winget install JohnMacFarlane.Pandoc` then `winget install wkhtmltopdf.wkhtmltox` | yes |
+| HTML | `pandoc` | `winget install JohnMacFarlane.Pandoc` | no (pandoc only; no PDF engine needed) |
 | PBIP | (none beyond text file writes) | n/a | no |
 
 ```python
@@ -25,8 +25,8 @@ need = {
 }
 selected = ["csv", "excel", "word"]  # set to output.export_formats
 missing = [hint for fmt in selected for mod, hint in need.get(fmt, []) if importlib.util.find_spec(mod) is None]
-if "pdf" in selected and not shutil.which("pandoc"):
-    missing.append("winget install JohnMacFarlane.Pandoc wkhtmltopdf.wkhtmltox")
+if "html" in selected and not (shutil.which("pandoc") or shutil.which("pandoc.exe")):
+    missing.append("winget install JohnMacFarlane.Pandoc")
 assert not missing, "Missing export tooling:\n  " + "\n  ".join(sorted(set(missing)))
 ```
 
@@ -38,11 +38,26 @@ assert not missing, "Missing export tooling:\n  " + "\n  ".join(sorted(set(missi
 
 The layered folder per `references/assessment-report-template.md` is markdown only by default. All other formats below are derived from it.
 
-### PDF (via pandoc)
+### HTML (via pandoc) — recommended branded report
+
+A single self-contained HTML file is the recommended shareable document format: it opens in any browser, needs only pandoc (no PDF engine, no LaTeX), and carries a branded header that mirrors the Azure Well-Architected Review results UI (banner, an overall-results gauge, and per-pillar scorecard cards with the official pillar icons).
+
+Two bundled assets drive the look (both in `references/assets/`, verified against the live Microsoft Learn WAF page 2026-06-21):
+
+- `report.css` — theme aligned to Learn's visual tokens (accent `#0F6CBD`, text `#161616`, Segoe UI). It also fixes pandoc's default ~36em body width that otherwise clips the wide 10-column recommendations table, and styles the banner / gauge / pillar cards.
+- `well-architected-hub.png` + `pillars/*.svg` — the official WAF hub image and the five pillar icons.
+- `gen_report_header.py` — a small generator that emits `_report-header.html` (banner + overall gauge + pillar cards) from the assessment's Met/Partial/Gap counts.
+
+**Step 1 — generate the themed header** (edit `META`/`PILLARS` in the script for the assessment, or import `build()`):
 
 ```powershell
-# Combined PDF of executive summary + all pillar files + recommendations.
-# wkhtmltopdf is the recommended PDF engine (far lighter than a LaTeX install on Windows).
+$assets = "skills\fabric-waf\references\assets"
+python "$assets\gen_report_header.py" --assets "$assets" --out WAFAssessmentReport-2026-06-13\_report-header.html
+```
+
+**Step 2 — build the self-contained HTML:**
+
+```powershell
 pandoc `
   WAFAssessmentReport-2026-06-13\README.md `
   WAFAssessmentReport-2026-06-13\reliability.md `
@@ -52,16 +67,19 @@ pandoc `
   WAFAssessmentReport-2026-06-13\performance-efficiency.md `
   WAFAssessmentReport-2026-06-13\recommendations.md `
   --metadata title="Fabric WAF Assessment 2026-06-13" `
-  --toc --toc-depth=2 `
-  --pdf-engine="C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe" `
-  -o WAFAssessmentReport-2026-06-13.pdf
+  -s --toc --toc-depth=2 --embed-resources `
+  --css skills\fabric-waf\references\assets\report.css `
+  --include-before-body WAFAssessmentReport-2026-06-13\_report-header.html `
+  -o WAFAssessmentReport-2026-06-13.html
 ```
 
-Requires pandoc + wkhtmltopdf (or a LaTeX engine such as MiKTeX).
+`--css ...\report.css` applies the theme; `--include-before-body _report-header.html` injects the banner + gauge + cards; `--embed-resources` base64-inlines the CSS, banner PNG, and pillar SVGs so the single `.html` is fully portable; `-s` makes it standalone; `--toc` builds the navigation contents.
 
-> **Verified 2026-06-21.** This produces a multi-page combined PDF with a table of contents. Two real-world gotchas:
-> - **PATH not refreshed in the same session.** After `winget install`, `pandoc` and `wkhtmltopdf` are not on `PATH` until you open a new shell. Either start a new terminal, or call the binaries by full path (pandoc commonly at `%LOCALAPPDATA%\Pandoc\pandoc.exe`, wkhtmltopdf at `C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe`).
-> - **Point pandoc at wkhtmltopdf explicitly** via `--pdf-engine=...full path...` if it is not on `PATH`, as shown above. Without `--pdf-engine`, pandoc defaults to a LaTeX engine and fails if none is installed.
+> **Verified 2026-06-21.** Produces a ~700 KB self-contained HTML (the embedded banner image and SVG icons account for the size) with the WAR-style header, all report tables fully visible (every recommendation column fits and wraps), and a navigable TOC. No external file references, so it can be emailed or hosted as-is. The "WAF index" on the gauge/cards is a transparent maturity indicator: `(Met*1 + Partial*0.5 + Gap*0) / principles * 100`. It is NOT the Azure WAR questionnaire score and is distinct from recommendation severity.
+>
+> **PATH note:** after `winget install`, `pandoc` is not on `PATH` until you open a new shell. Either start a new terminal, or call it by full path (commonly `%LOCALAPPDATA%\Pandoc\pandoc.exe`).
+>
+> **Branding note:** the WAF hub image and pillar icons are Microsoft Learn assets, used here in a Microsoft Fabric WAF assessment context. Keep them in `references/assets/`; do not embed Microsoft Learn's site CSS verbatim (proprietary, won't render standalone, and changes without notice) — the bundled `report.css` re-creates the look from public design tokens.
 
 ### Excel (via openpyxl, against `recommendations.md`)
 
