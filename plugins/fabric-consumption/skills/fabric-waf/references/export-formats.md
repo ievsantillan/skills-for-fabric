@@ -80,7 +80,7 @@ pandoc `
 >
 > **PATH note:** after `winget install`, `pandoc` is not on `PATH` until you open a new shell. Either start a new terminal, or call it by full path (commonly `%LOCALAPPDATA%\Pandoc\pandoc.exe`).
 >
-> **Branding note:** the WAF hub image and pillar icons are Microsoft Learn assets, used here in a Microsoft Fabric WAF assessment context. Keep them in `references/assets/`; do not embed Microsoft Learn's site CSS verbatim (proprietary, won't render standalone, and changes without notice) — the bundled `report.css` re-creates the look from public design tokens.
+> **Branding note:** the WAF hub image and pillar icons are Microsoft Learn assets, and the Azure / Microsoft Fabric logos in the banner are official Microsoft marks (Fabric logo from the `@fabric-msft/svg-icons` npm package; Azure logo from the official Microsoft Azure brand). All are used here in a Microsoft Fabric WAF assessment context. Keep them in `references/assets/` (logos under `assets/logos/`); use the official, undistorted assets and do not recolor or stretch them. Do not embed Microsoft Learn's site CSS verbatim (proprietary, won't render standalone, and changes without notice) — the bundled `report.css` re-creates the look from public design tokens.
 
 ### Excel (via openpyxl, against `recommendations.md`)
 

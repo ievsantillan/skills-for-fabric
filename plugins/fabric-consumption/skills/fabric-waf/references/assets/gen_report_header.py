@@ -62,12 +62,19 @@ def build(assets_dir):
   </article>''')
 
     hub = os.path.join(assets_dir, "well-architected-hub.png").replace("\\", "/")
+    azure_logo = os.path.join(assets_dir, "logos", "azure.svg").replace("\\", "/")
+    fabric_logo = os.path.join(assets_dir, "logos", "fabric.svg").replace("\\", "/")
     return f'''<button class="theme-toggle" type="button" onclick="wafToggleTheme()" aria-label="Toggle light or dark theme" title="Toggle light/dark">
   <span class="icon-light">&#9788; Light</span><span class="icon-dark">&#9790; Dark</span>
 </button>
 <div class="report-banner">
   <img class="banner-img" src="{hub}" alt="Microsoft Azure Well-Architected Framework" />
   <div class="report-banner-caption">{html.escape(META["title"])}</div>
+  <div class="report-logos">
+    <span class="logo-item"><img class="logo" src="{azure_logo}" alt="Microsoft Azure" /> Azure Well-Architected Framework</span>
+    <span class="logo-sep">assessing</span>
+    <span class="logo-item"><img class="logo" src="{fabric_logo}" alt="Microsoft Fabric" /> Microsoft Fabric</span>
+  </div>
   <div class="report-meta">Workspace: <strong>{html.escape(META["workspace"])}</strong> &nbsp;&bull;&nbsp; Mode: {html.escape(META["mode"])} &nbsp;&bull;&nbsp; {html.escape(META["date"])}</div>
 </div>
 
