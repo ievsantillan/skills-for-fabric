@@ -62,7 +62,10 @@ def build(assets_dir):
   </article>''')
 
     hub = os.path.join(assets_dir, "well-architected-hub.png").replace("\\", "/")
-    return f'''<div class="report-banner">
+    return f'''<button class="theme-toggle" type="button" onclick="wafToggleTheme()" aria-label="Toggle light or dark theme" title="Toggle light/dark">
+  <span class="icon-light">&#9788; Light</span><span class="icon-dark">&#9790; Dark</span>
+</button>
+<div class="report-banner">
   <img class="banner-img" src="{hub}" alt="Microsoft Azure Well-Architected Framework" />
   <div class="report-banner-caption">{html.escape(META["title"])}</div>
   <div class="report-meta">Workspace: <strong>{html.escape(META["workspace"])}</strong> &nbsp;&bull;&nbsp; Mode: {html.escape(META["mode"])} &nbsp;&bull;&nbsp; {html.escape(META["date"])}</div>

@@ -69,13 +69,14 @@ pandoc `
   --metadata title="Fabric WAF Assessment 2026-06-13" `
   -s --toc --toc-depth=2 --embed-resources `
   --css skills\fabric-waf\references\assets\report.css `
+  --include-in-header skills\fabric-waf\references\assets\report-head.html `
   --include-before-body WAFAssessmentReport-2026-06-13\_report-header.html `
   -o WAFAssessmentReport-2026-06-13.html
 ```
 
-`--css ...\report.css` applies the theme; `--include-before-body _report-header.html` injects the banner + gauge + cards; `--embed-resources` base64-inlines the CSS, banner PNG, and pillar SVGs so the single `.html` is fully portable; `-s` makes it standalone; `--toc` builds the navigation contents.
+`--css ...\report.css` applies the theme; `--include-in-header ...\report-head.html` adds the early light/dark theme-init script (in `<head>`, so there is no flash of the wrong theme); `--include-before-body _report-header.html` injects the banner + gauge + cards + theme toggle button; `--embed-resources` base64-inlines the CSS, banner PNG, and pillar SVGs so the single `.html` is fully portable; `-s` makes it standalone; `--toc` builds the navigation contents.
 
-> **Verified 2026-06-21.** Produces a ~700 KB self-contained HTML (the embedded banner image and SVG icons account for the size) with the WAR-style header, all report tables fully visible (every recommendation column fits and wraps), and a navigable TOC. No external file references, so it can be emailed or hosted as-is. The "WAF index" on the gauge/cards is a transparent maturity indicator: `(Met*1 + Partial*0.5 + Gap*0) / principles * 100`. It is NOT the Azure WAR questionnaire score and is distinct from recommendation severity.
+> **Verified 2026-06-21.** Produces a ~710 KB self-contained HTML (the embedded banner image and SVG icons account for the size) with the WAR-style header, all report tables fully visible (every recommendation column fits and wraps), and a navigable TOC. **Light/dark mode**: the report follows the reader's OS preference by default and has a toggle button (top-right) that overrides it and persists the choice to `localStorage`; verified in both modes by browser screenshot. No external file references, so it can be emailed or hosted as-is. The "WAF index" on the gauge/cards is a transparent maturity indicator: `(Met*1 + Partial*0.5 + Gap*0) / principles * 100`. It is NOT the Azure WAR questionnaire score and is distinct from recommendation severity.
 >
 > **PATH note:** after `winget install`, `pandoc` is not on `PATH` until you open a new shell. Either start a new terminal, or call it by full path (commonly `%LOCALAPPDATA%\Pandoc\pandoc.exe`).
 >

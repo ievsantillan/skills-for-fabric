@@ -1,0 +1,23 @@
+<script>
+/* Theme init (runs in <head>, before first paint, to avoid a flash of the wrong theme).
+   Order of precedence: saved choice in localStorage > OS preference (handled by CSS). */
+(function () {
+  try {
+    var saved = localStorage.getItem("waf-theme");
+    if (saved === "dark" || saved === "light") {
+      document.documentElement.setAttribute("data-theme", saved);
+    }
+  } catch (e) {}
+})();
+function wafToggleTheme() {
+  var el = document.documentElement;
+  var cur = el.getAttribute("data-theme");
+  if (!cur) {
+    // No explicit choice yet: derive current effective theme from the OS preference.
+    cur = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  var next = cur === "dark" ? "light" : "dark";
+  el.setAttribute("data-theme", next);
+  try { localStorage.setItem("waf-theme", next); } catch (e) {}
+}
+</script>

@@ -58,6 +58,9 @@ Storage continues to accrue even when compute is paused. Long retention, cached 
 
 **Evidence**: capacity SKU + PAYG/reserved mix; per-workload CU consumption (Capacity Metrics App); storage growth trend; Power BI Pro license inventory; idle/oversized capacity list.
 
+> **Currency**: when reporting any cost figure, always include the currency code from the source (Azure Cost Management returns a `Currency` column; billing APIs expose the billing currency). Write `958.66 USD`, not `$958.66`: customers are global and may bill in other currencies. See the presentation convention in `common/FABRIC-WAF-CORE.md`.
+
+
 ### Model costs effectively
 
 Use platform capabilities to optimize for workload patterns:
