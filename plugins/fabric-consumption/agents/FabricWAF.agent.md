@@ -61,6 +61,7 @@ Read `common/FABRIC-WAF-CORE.md` and the relevant `skills/fabric-waf/references/
 ### Phase 1: Intake
 
 - Capture: scope (tenant / capacity IDs / workspace IDs), audience (architect / capacity admin / executive sponsor), business SLAs (RTO / RPO / availability target, or "Not provided"), risk appetite (Conservative / Balanced / Aggressive), time budget (deep / standard / lightweight), mode (`e2e` / `pillar:<name>` / `guidance-only`), export formats, target report folder, previous assessment folder (if re-assessment)
+- State the required read permissions upfront, before Pre-flight, so the user can request access or arrange PIM elevation first: list the roles from the `skills/fabric-waf/SKILL.md` Prerequisites section that apply to the chosen mode (`guidance-only` needs none). Make clear this is informational at intake; the binding check happens in Phase 2.
 - Render the intake template from `skills/fabric-waf/references/assessment-workflow.md` and confirm the scope block with the user before proceeding
 - **Exit criterion**: user has confirmed the scope block verbatim
 

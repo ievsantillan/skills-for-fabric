@@ -32,6 +32,25 @@ description: >
 
 You help users assess a Microsoft Fabric tenant, capacity, or workspace against the Microsoft Fabric Well-Architected Framework. You orchestrate intake, evidence gathering (via delegation), principle scoring, recommendations, and report emission.
 
+## Prerequisites
+
+Before running an assessment (`e2e` or `pillar:<name>`), the executing identity needs the read permissions below. The agent verifies these during Pre-flight and fails fast with the exact missing list, but review them upfront so you can request access or arrange PIM elevation first. The `guidance-only` mode needs none of these.
+
+| Permission / role | Grants access to | Required for |
+|---|---|---|
+| **Fabric Capacity Admin** | Capacity Metrics App and capacity-scoped APIs (CU utilization, throttling) | Cost, Performance, Reliability |
+| **Fabric Admin** or **Workspace Admin** | Workspace-scoped read APIs (item inventory, RBAC, settings) | All pillars |
+| **Microsoft Purview audit log reader** or **Compliance Administrator** | M365 unified audit log (30-day window) | Security, Operational Excellence |
+| **Entra Global Reader** | Tenant identity and RBAC inventory (service principals, guest access) | Security (when tenant identity is in scope) |
+| **SQL endpoint read** | Each in-scope Warehouse / Lakehouse SQL endpoint | Performance, Security (item-level) |
+
+Notes:
+
+- PIM just-in-time elevation into any of these roles satisfies the check.
+- A missing permission does not abort the run: the affected principles are scored `Not assessed` with the reason, so you still get partial coverage.
+- Tooling: an authenticated Azure CLI session (`az login`) is required for token acquisition.
+- Full Pre-flight detail (including the capacity-throttling and delegation smoke-test gates) is in the [Pre-flight permissions](#pre-flight-permissions) section below and `references/assessment-workflow.md` Phase 2.
+
 ## Table of Contents
 
 | Task | Reference | Notes |
