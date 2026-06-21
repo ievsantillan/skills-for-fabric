@@ -12,7 +12,7 @@ Markdown needs nothing. Each additional format has its own dependencies; install
 | CSV | `pandas` | `pip install pandas` | no |
 | Excel | `pandas`, `openpyxl` | `pip install pandas openpyxl` | no |
 | Word | `python-docx` | `pip install python-docx` | no (pandoc-free path) |
-| PDF | `pandoc` + `wkhtmltopdf` | `winget install JohnMacFarlane.Pandoc wkhtmltopdf.wkhtmltox` | yes |
+| PDF | `pandoc` + `wkhtmltopdf` | `winget install JohnMacFarlane.Pandoc` then `winget install wkhtmltopdf.wkhtmltox` | yes |
 | PBIP | (none beyond text file writes) | n/a | no |
 
 ```python
@@ -42,6 +42,7 @@ The layered folder per `references/assessment-report-template.md` is markdown on
 
 ```powershell
 # Combined PDF of executive summary + all pillar files + recommendations.
+# wkhtmltopdf is the recommended PDF engine (far lighter than a LaTeX install on Windows).
 pandoc `
   WAFAssessmentReport-2026-06-13\README.md `
   WAFAssessmentReport-2026-06-13\reliability.md `
@@ -52,10 +53,15 @@ pandoc `
   WAFAssessmentReport-2026-06-13\recommendations.md `
   --metadata title="Fabric WAF Assessment 2026-06-13" `
   --toc --toc-depth=2 `
+  --pdf-engine="C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe" `
   -o WAFAssessmentReport-2026-06-13.pdf
 ```
 
-Requires pandoc + a LaTeX engine (e.g., MiKTeX or wkhtmltopdf via `--pdf-engine=wkhtmltopdf`).
+Requires pandoc + wkhtmltopdf (or a LaTeX engine such as MiKTeX).
+
+> **Verified 2026-06-21.** This produces a multi-page combined PDF with a table of contents. Two real-world gotchas:
+> - **PATH not refreshed in the same session.** After `winget install`, `pandoc` and `wkhtmltopdf` are not on `PATH` until you open a new shell. Either start a new terminal, or call the binaries by full path (pandoc commonly at `%LOCALAPPDATA%\Pandoc\pandoc.exe`, wkhtmltopdf at `C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe`).
+> - **Point pandoc at wkhtmltopdf explicitly** via `--pdf-engine=...full path...` if it is not on `PATH`, as shown above. Without `--pdf-engine`, pandoc defaults to a LaTeX engine and fails if none is installed.
 
 ### Excel (via openpyxl, against `recommendations.md`)
 
