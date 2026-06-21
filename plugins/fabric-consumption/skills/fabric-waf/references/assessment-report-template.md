@@ -59,6 +59,12 @@ Keep README executive-readable. Detail belongs in the pillar files.
 4. **Per-principle blocks**: one per H2 from the Learn page, in the order Learn presents them. Standard detail (see below).
 5. **Pillar-local tradeoffs**: cross-pillar tradeoffs surfaced by this pillar's recommendations
 
+## Hyperlinking conventions (markdown -> clickable HTML export)
+
+- **Pillar Learn URL**: write it as a markdown link, not a bare URL, e.g. `[Microsoft Learn: Reliability for Microsoft Fabric workloads](https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/reliability)`.
+- **README References section**: add a "References" section to `README.md` linking the official Microsoft Fabric WAF docs (the [landing page](https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/) plus the five pillar pages, and the [WAF overview](https://learn.microsoft.com/en-us/azure/well-architected/) + [assessment tool](https://learn.microsoft.com/en-us/assessments/azure-architecture-review/)).
+- **Recommendation IDs are cross-referenced as links**: anchor each row of the consolidated `recommendations.md` table by prefixing the ID cell with `<span id="rec-<ID>"></span>`. When the dedup pass merges per-pillar IDs into a theme row (e.g. `R001`, `PR001`, `OR001` -> `C001`), add alias anchors on that row for each merged ID so references still resolve. Then linkify every inline ID mention in prose to `[<ID>](#rec-<ID>)`. In the combined HTML export this makes IDs clickable jumps to the backlog. (A small linkify script can do steps automatically; keep it idempotent.)
+
 ### Per-principle block format (Standard detail)
 
 ```markdown

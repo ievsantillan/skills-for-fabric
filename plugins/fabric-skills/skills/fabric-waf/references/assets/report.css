@@ -90,6 +90,18 @@ body {
 
 a { color: var(--waf-accent); }
 code { background: var(--waf-code-bg); padding: .1em .3em; border-radius: 3px; font-size: .9em; }
+/* Fenced code blocks (e.g. the YAML version stamp): readable in both themes. */
+pre {
+  background: var(--waf-code-bg);
+  color: var(--waf-text);
+  border: 1px solid var(--waf-border);
+  border-radius: 6px;
+  padding: .8rem 1rem;
+  overflow-x: auto;
+  font-size: .85rem;
+  line-height: 1.45;
+}
+pre code { background: none; padding: 0; color: inherit; }
 
 /* ---------- Theme toggle button ---------- */
 .theme-toggle {
