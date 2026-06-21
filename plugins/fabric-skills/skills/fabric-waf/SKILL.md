@@ -65,6 +65,7 @@ Notes:
 | Report template | [references/assessment-report-template.md](./references/assessment-report-template.md) | Layered folder + per-principle block format |
 | Evidence checklist | [references/evidence-checklist.md](./references/evidence-checklist.md) | Per-pillar at-a-glance index with source tags |
 | Export formats | [references/export-formats.md](./references/export-formats.md) | PDF / Excel / Word / CSV; PBIP via [references/export-pbip.md](./references/export-pbip.md) |
+| Monitoring accelerators | [references/monitoring-accelerators.md](./references/monitoring-accelerators.md) | Five Fabric Toolbox monitoring solutions + "which to use when" + pillar mapping |
 | Concrete example queries | [references/example-assessment.md](./references/example-assessment.md) | KQL + T-SQL + REST samples |
 | Must/Prefer/Avoid | [SKILL.md § Must/Prefer/Avoid](#mustpreferavoid) | Guardrails: read this in full |
 | Workflow | [SKILL.md § Workflow](#workflow) | High-level orchestration order |

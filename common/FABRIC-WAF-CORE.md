@@ -30,6 +30,7 @@ There is **no Microsoft Fabric WAF SDK or assessment REST API** in the Fabric RE
 2. **Open-source accelerators cited by Microsoft Learn**:
    - [`fabric-cost-analysis`](https://github.com/microsoft/fabric-toolbox/tree/main/monitoring/fabric-cost-analysis) (cited by Cost Optimization page)
    - [`FUAM`: Fabric Unified Admin Monitoring](https://github.com/microsoft/fabric-toolbox/tree/main/monitoring/fabric-unified-admin-monitoring) (cited by Operational Excellence page)
+   - Full catalog of the five Fabric Toolbox monitoring accelerators, with a "which to use when" guide and pillar mapping: [`skills/fabric-waf/references/monitoring-accelerators.md`](../skills/fabric-waf/references/monitoring-accelerators.md)
 3. **Microsoft Well-Architected Review online tool** ([survey-based experience](https://learn.microsoft.com/en-us/assessments/azure-architecture-review/)): referenced as an output format only; we do not depend on it.
 
 If a Fabric WAF SDK or assessment REST API ships in the future, this file is the place to record it.

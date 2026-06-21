@@ -13,6 +13,8 @@ Consolidated per-pillar evidence items the assessment gathers. Each item is tagg
 
 > **Microsoft Graph evidence requires the right token (Security pillar).** PIM (Privileged Identity Management) role schedules and sensitivity-label policies are read from Microsoft Graph, not the Fabric REST API, and are **not reachable with an Azure CLI (`az rest`) Graph token**: that first-party app lacks the `RoleManagement.Read.Directory` and `InformationProtection*` delegated scopes (returns HTTP 403 / 400). Use Microsoft Graph PowerShell (`Connect-MgGraph -Scopes "RoleManagement.Read.Directory","InformationProtectionPolicy.Read"`) or a custom app registration. Note also: an empty/400 sensitivity-label result is **not necessarily a licensing gap** (Microsoft 365 E5 already includes Purview Information Protection); confirm license vs deployment before scoring.
 
+> **Monitoring remediation.** When a monitoring/observability principle scores Partial or Gap, recommend the relevant Fabric Toolbox accelerator from [`monitoring-accelerators.md`](./monitoring-accelerators.md) (FUAM, fabric-platform-monitoring, workspace-monitoring-dashboards, fabric-cost-analysis, fabric-spark-monitoring). Always flag them as community accelerators, not officially supported.
+
 ---
 
 ## Reliability
