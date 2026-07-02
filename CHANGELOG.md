@@ -2,7 +2,7 @@
 
 User-facing changes for the public Microsoft Fabric Skills release.
 
-## [0.3.4] - 2026-06-13
+## [Unreleased]
 
 ### Added
 
@@ -15,6 +15,52 @@ User-facing changes for the public Microsoft Fabric Skills release.
 ### Changed
 
 - **`.gitignore` excludes `WAFAssessmentReport-*/` and `WAFAssessmentReport/`**: assessment report folders may contain PII (UPNs, capacity / workspace GUIDs, item names that reveal customer/product confidentiality, raw evidence rows) and must not be committed by default.
+
+## [0.3.6] - 2026-07-02
+
+### Added
+- **`skills/dataflows-authoring-cli`** -- preview-and-confirm step in the dataflow creation flow: the agent previews each entity via `executeQuery` and renders ASCII line/bar charts (`references/charts/line_chart.py`, `references/charts/bar_chart.py`) so the user can validate output before the first refresh.
+
+### Changed
+- **Eventstream skills enhanced** (`eventstream-authoring-cli`, `eventstream-consumption-cli`; both shipped in v0.3.5) -- SKILL.md, core-reference, and API-endpoint refinements detailed below.
+- **`eventstream-consumption-cli` — Custom Endpoint connection string retrieval recipe.** New "Get Custom Endpoint Connection String" section with full `az rest` CLI recipes (bash + PowerShell) showing the 2-step Topology API workflow: get topology → get source connection. Includes security guidance, multi-source disambiguation, Kafka producer config table, and MUST DO rule.
+- **`EVENTSTREAM-AUTHORING-CORE.md` — Eventhouse ingestion modes guidance.** Added ProcessedIngestion as recommended API-automatable path with full example, DirectIngestion warning documenting the known UI-only data connection limitation, cross-skill collaboration pattern table, and CDC bracket-escaping fix.
+- **Corrected Eventstream Definition API endpoints** -- All SKILL.md code blocks and eval Layer 1 regex assertions updated from unsupported `GET .../definition` / `PUT .../definition` to the official `POST .../getDefinition` / `POST .../updateDefinition` per Microsoft Learn docs.
+- **`skills/search-consumption-cli`** -- reworked the skill description and triggers to lead with catalog-search framing ("search for an item", "search the catalog", "catalog search") and dropped discovery-verb-only triggers that did not reliably route to it. The skill now activates for cross-tenant "search the catalog for an item" requests, which is its actual purpose (the Fabric Catalog Search API). Reconciled the troubleshooting note on indexing lag (variable, not yet near-real-time; not a fixed ~24h).
+
+### Fixed
+- **`skills/dataflows-consumption-cli`** -- chart reference examples are now runnable as-written: bar-chart example passes the required `--labels`, `jq group_by` is preceded by `sort_by`, and the bar/pie renderers cast labels to `str` to avoid `TypeError` on numeric JSON categories.
+
+## [0.3.5] - 2026-06-25
+
+### Added
+- **New skills `fabriciq-ontology-authoring-cli` and `fabriciq-ontology-consumption-cli`** — Fabric IQ Ontology (preview) support from the CLI. `fabriciq-ontology-authoring-cli` creates and evolves Ontology items (entity types, properties incl. timeseries, relationship types, and bindings to OneLake lakehouse or Eventhouse / KQL tables) via the Fabric item-definition REST API with a mandatory Preview & Confirm gate before any LRO write. `fabriciq-ontology-consumption-cli` reads Ontology items to produce agent grounding context and routes ontology-backed data queries by binding type to the matching per-datasource consumption skill (`eventhouse-consumption-cli`, `spark-consumption-cli`, `sqldw-consumption-cli`). Adds per-skill `references/` (including a shared ontology schema reference bundled into each skill), routing tests and full-eval plans.
+- **New skill: `mlv-operations-cli`** -- Manage Materialized Lake View (MLV) refresh schedules and job execution via Fabric REST APIs. Provides scheduling and monitoring operations (9 endpoints):
+  - **Schedule Management**: Create/list/update/delete refresh schedules (Cron, Daily, Weekly, Monthly)
+  - **Job Execution**: Trigger on-demand refreshes, monitor job status/history, cancel running jobs
+  - **UX Patterns**: Human-in-the-loop confirmations, step-by-step planning, iterative error handling
+  - **Gap Documentation**: Transparently documents MLV discovery limitations — user must provide lakehouse ID and table names manually
+- **Cross-skill integration** -- Routing from spark-authoring-cli, spark-operations-cli, FabricDataEngineer agent delegation
+- **Competitive advantage** -- Fabric is first platform to offer conversational MLV scheduling (Databricks Lakeflow has no equivalent)
+
+## [0.3.4] - 2026-06-18
+
+### Added
+- **Materialized Lake View (MLV) resources for `spark-authoring-cli`** -- two new resource documents:
+  - `resources/materialized-lake-view-patterns.md` -- MLV design guidance, layering patterns, when to use MLVs vs. plain Delta tables, and the SQL-vs-PySpark authoring tradeoff (PySpark MLVs are lineage-schedule-refresh only and don't support on-demand notebook refresh).
+  - `resources/mlv-incremental-refresh-patterns.md` -- refresh-readiness review workflow, IR-friendly syntax guide, full-refresh blocker catalog, and safe non-breaking rewrites.
+- **MLV triggers + routing in `spark-authoring-cli/SKILL.md`** -- discovery phrases (`materialized lake view`, `MLV`, `CREATE MATERIALIZED LAKE VIEW`, `MLV incremental refresh`, `review MLV for incremental refresh`, `MLV refresh policy`, `schedule MLV refresh`), resource table entries, Rule 4 MLV routing, and a quick-start SQL example.
+- **Cross-link from `e2e-medallion-architecture` PREFER section** -- points Silver/Gold layer authoring at the new MLV resources.
+- **M language semantics reference for `dataflows-authoring-cli`** — new `references/m-language.md` covering language-side pitfalls confirmed live against a Fabric Dataflow Gen2 via `executeQuery`: `try` success vs failure record shapes (`[HasError, Value]` vs `[HasError, Error[Reason, Message, Detail]]`), `try ... otherwise` short-circuit semantics, per-cell error wrapping in `Table.TransformColumnTypes` and `Table.TransformColumns` (errors stored at the cell level — Arrow renders them as `null` but reads raise), `each` scoping divergence between row contexts (`Table.SelectRows`: `_` is a row record) and sub-table contexts (`Table.Group`: `_` is the sub-table — use `_[Col]` for the column-as-list), optional field access (`r[key]?`, `Record.FieldOrDefault`), quoted-identifier escaping (`#"..."`), error-record construction, and sandbox-disabled symbols. SKILL.md References table updated.
+- **Source connector patterns for `dataflows-authoring-cli`** — new `references/connectors.md` covering the M-side source connector surface: live-verified function inventory (`Lakehouse.Contents`, `Sql.Database`, `Fabric.Warehouse`, `OData.Feed`, `Web.Contents`, `PowerPlatform.Dataflows`, `Snowflake.Databases`, `AzureStorage.DataLake`, `Excel.Workbook`, `Variable.Value`, `Html.Table`, `Csv.Document`, `Json.Document`, `Lines.FromBinary`), verified Lakehouse deep navigation (`workspaceId` → `lakehouseId` → flat-table `Name` index), `PowerPlatform.Dataflows` workspace/dataflow navigation (`{[Id="Workspaces"]}[Data]` → `workspaceId` → `dataflowName`), runtime-disabled functions (`Web.Page`, `Web.BrowserContents`), credentialed-connector argument shapes, the in-band `{"Error":"..."}` decoding contract for `executeQuery` Arrow responses, and the `[AllowCombine = true]` multi-source section attribute. Every behaviour claim was reproduced live via `executeQuery`.
+- **Gemini CLI compatibility** -- new `compatibility/GEMINI.md` (a thin `@./AGENTS.md` import) is flattened to the public repo root by the release flow, so cloning the public repo enables Gemini CLI automatically.
+
+### Changed
+- **Compatibility files** (`compatibility/CLAUDE.md`, `AGENTS.md`, `.cursorrules`, `.windsurfrules`) -- added pointers to the new MLV resources so cross-tool consumers route to the same guidance.
+- **`skills/dataflows-authoring-cli/SKILL.md`** — added a requirement to name the definition parts (`mashup.pq`, `queryMetadata.json`, `.platform`) in the written summary so they survive transcript truncation; condensed the connector-types note to keep the YAML description within the 1023-char limit.
+
+### Fixed
+- **Cross-tool config files** -- removed dead "see DEVELOPMENT-GUIDE.md at repository root" references (the file never existed) from `AGENTS.md`, `.cursorrules`, and `.windsurfrules`. `AGENTS.md` and `.windsurfrules` now inline the `az login` token steps the link was meant to provide, matching `CLAUDE.md`.
 
 ## [0.3.3] - 2026-06-07
 

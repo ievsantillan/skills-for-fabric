@@ -1,6 +1,6 @@
 # Copilot Instructions for skills-for-fabric Repository
 
-This repository contains AI coding assistant skills for Microsoft Fabric. When working in this repository, follow these guidelines.
+This repository contains AI coding assistant skills for Microsoft Fabric.
 
 ## Repository Structure
 
@@ -70,3 +70,4 @@ When modifying skills, ensure compatibility files in `compatibility/` are update
 - `.cursorrules` for Cursor
 - `AGENTS.md` for Codex/Jules/OpenCode
 - `.windsurfrules` for Windsurf
+- `GEMINI.md` for Gemini CLI (imports `@./AGENTS.md`; no separate edits)

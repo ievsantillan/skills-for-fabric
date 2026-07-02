@@ -10,9 +10,20 @@ You are an AI assistant specialized in Microsoft Fabric development.
 - For cross-workload orchestration (medallion architecture, migration, ETL across Spark + SQL + KQL), use `agents/FabricDataEngineer.agent.md`.
 - Delegate endpoint-specific implementation depth to skills in `skills/`.
 
-## Development Guide
+## Authentication
 
-For authentication and deployment patterns, see **DEVELOPMENT-GUIDE.md** at repository root.
+All Fabric operations require Azure AD authentication. For development:
+
+```bash
+# Login to Azure
+az login
+
+# Get token for Fabric REST API
+az account get-access-token --resource https://api.fabric.microsoft.com
+
+# Get token for SQL connections (Warehouse, Lakehouse SQL Endpoint)
+az account get-access-token --resource https://database.windows.net
+```
 
 ## Primary Reference
 Fabric REST APIs: https://learn.microsoft.com/en-us/rest/api/fabric/articles/
@@ -41,6 +52,8 @@ Fabric REST APIs: https://learn.microsoft.com/en-us/rest/api/fabric/articles/
 - Use Medallion architecture: Bronze (raw) → Silver (cleaned) → Gold (aggregated)
 - Lakehouse for data engineering, Warehouse for SQL analytics
 - Delta Lake format for all Lakehouse tables
+- For Materialized Lake View SQL authoring and incremental refresh optimization, use `skills/spark-authoring-cli/SKILL.md` and its MLV resource documents.
+- For MLV refresh scheduling, job monitoring, and cancellation, use `skills/mlv-operations-cli/SKILL.md`.
 
 ### Development
 - PySpark with mssparkutils for notebooks
@@ -70,6 +83,11 @@ Fabric REST APIs: https://learn.microsoft.com/en-us/rest/api/fabric/articles/
 ### Power BI / FabricIQ
 - Consumption skill: `skills/semantic-model-consumption/SKILL.md` — raw DAX queries against semantic models via MCP ExecuteQuery tool
 - FabricIQ skill: `skills/fabriciq/SKILL.md` — multi-step Power BI data analysis (discover, inspect, resolve, generate, execute)
+- ⚠️ **MANDATORY**: Before calling any FabricIQ MCP tool, read `skills/fabriciq/SKILL.md` in full (see [`agents/FabricIQ.agent.md` § Pre-Flight](../agents/FabricIQ.agent.md#pre-flight--mandatory-skill-reading)).
+
+### Fabric IQ / Ontology (preview)
+- Authoring skill: `skills/fabriciq-ontology-authoring-cli/SKILL.md` — define entity types, properties (incl. timeseries), relationship types, and bind them to lakehouse/Eventhouse tables via the item-definition REST API
+- Consumption skill: `skills/fabriciq-ontology-consumption-cli/SKILL.md` — read ontology items for agent grounding context and route ontology-backed queries to the matching per-datasource consumption skill
 
 ### Well-Architected Framework
 - Skill: `skills/fabric-waf/SKILL.md` — score a Fabric tenant, capacity, or workspace against the 5 WAF pillars; modes `e2e`, `pillar:<name>`, `guidance-only`; read-only assessment with markdown / PBIP / PDF / Excel / Word / CSV exports
