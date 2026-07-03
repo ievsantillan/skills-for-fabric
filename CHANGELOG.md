@@ -15,6 +15,7 @@ User-facing changes for the public Microsoft Fabric Skills release.
 
 ### Changed
 
+- **`skills/fabric-waf/references/export-pbip.md`**: aligned the optional PBIP export with the newly published Power BI agentic authoring skills. Adds a local, read-only Power BI Desktop Bridge validation loop (`validate-report` plus open / reload / screenshot), the PBIR-only format rule (PBIR-Legacy unsupported; never hand-author PBIR JSON, always route through `powerbi-report-authoring`), modern visual types (`cardVisual` / `pivotTable` instead of the deprecating `card` / `matrix` / Q&A / maps), a Phase 7 semantic-model binding-verification plus long-running-operation note, and links to the Microsoft Learn overviews for the authoring, design, planner/management skills and the Desktop Bridge.
 - **`.gitignore` excludes `WAFAssessmentReport-*/` and `WAFAssessmentReport/`**: assessment report folders may contain PII (UPNs, capacity / workspace GUIDs, item names that reveal customer/product confidentiality, raw evidence rows) and must not be committed by default.
 
 ## [0.3.6] - 2026-07-02

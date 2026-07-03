@@ -183,6 +183,8 @@ Generates a Power BI project (semantic model + report) so pillar scores trend ov
 
 Full design: star schema, DAX measures, page layouts, color palette, refresh strategy: lives in **`references/export-pbip.md`**. Enable by setting `output.export_formats: [markdown, pbip]` in the intake.
 
+PBIR content is authored only via `powerbi-report-authoring` (never hand-written), validated locally with `validate-report` plus the Power BI Desktop Bridge (open / reload / screenshot), and uses the `PBIR` format (PBIR-Legacy is unsupported). See `references/export-pbip.md`.
+
 PBIP generation is **local only** (writes files to disk). Publishing the PBIP to a Fabric workspace is a separate Phase 7 step that requires explicit per-session user confirmation. See the read-only boundary in `common/FABRIC-WAF-CORE.md`.
 
 ---

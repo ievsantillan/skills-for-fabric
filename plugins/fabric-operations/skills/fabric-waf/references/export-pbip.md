@@ -10,6 +10,14 @@ Authoring is delegated to:
 - `semantic-model-authoring`: TMDL / semantic model project generation
 - `powerbi-report-management`: ONLY in optional Phase 7 publish
 
+Optionally, for the page layout brief, `powerbi-report-design` (archetype, chart choice, color, layout) and `powerbi-report-planning` (guided requirements to build) can feed the authoring step. All four skills ship in the `powerbi-authoring` plugin.
+
+### PBIR authoring rules (from the Power BI Report Authoring skill)
+
+- **Never construct PBIR JSON by hand or from memory.** All PBIR page/visual content must go through `powerbi-report-authoring`; `powerbi-report-management` is transport only. See [Report Authoring skill overview](https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-authoring-skill-overview).
+- **PBIR format only.** Use `?format=PBIR` on `getDefinition`; **PBIR-Legacy is not supported** by these skills. If a definition returns `"format": "PBIR-Legacy"`, it cannot be processed.
+- **PBIR is the source of truth.** Commit a baseline of the PBIP before letting the agent modify PBIR files (so changes are revertible), and save any manual Power BI Desktop edits before asking the agent to iterate (unsaved Desktop changes are not seen by the agent).
+
 ---
 
 ## Star schema
@@ -158,9 +166,11 @@ The "Effort Hours Total" S/M/L → hour mapping (4 / 24 / 80) is our convention;
 
 ## Page layouts (4 pages)
 
+> **Use modern visual types.** Prefer `cardVisual` (not the legacy `card`) and `pivotTable` (not the legacy `matrix`). Avoid visuals the platform is deprecating: Q&A, Bing maps, and filled maps. The authoring skill validates and renders these correctly; legacy types may not survive future Desktop versions.
+
 ### 1. Executive Overview
 
-- Scorecard banner: % Met by Pillar (5 large cards)
+- Scorecard banner: % Met by Pillar (5 large `cardVisual` tiles)
 - Top 5 risks (Critical + High, Open status)
 - Top 5 quick wins (Effort = S, Severity High or Critical, Open status)
 - Score trend line (multi-assessment): `% Met by Pillar` over `AssessmentDate`
@@ -169,7 +179,7 @@ The "Effort Hours Total" S/M/L → hour mapping (4 / 24 / 80) is our convention;
 ### 2. Pillar Drill
 
 - Pillar slicer (single select)
-- Per-principle table: PrincipleName, Score, FindingText (tooltip), EvidencePointer (link)
+- Per-principle `pivotTable`: PrincipleName, Score, FindingText (tooltip), EvidencePointer (link)
 - Score distribution donut
 - Related recommendations filtered by pillar
 
@@ -210,6 +220,23 @@ These are our default tokens; align with the user's Power BI theme.
 
 ---
 
+## Validation (local, Power BI Desktop Bridge)
+
+After the PBIP is generated, validate it locally before treating the export as complete. This is a local, read-only edit-verify loop (no Fabric tenant mutation) run by `powerbi-report-authoring`:
+
+1. **Structural validation**: run the authoring skill's `validate-report` to catch malformed PBIR, broken query/role bindings, or missing files.
+2. **Desktop render check**: open the PBIP in Power BI Desktop and use the **Power BI Desktop Bridge** to reload and capture a screenshot of each page. The bridge is a local named-pipe IPC (`pbi-desktop-bridge-${processId}`, JSON-RPC 2.0); enable it via **File > Options and Settings > Options > Preview Features > "Enable external tool access to Power BI Desktop through secure local APIs"**. Always call `bridge.manifest` first to discover supported methods. See [Power BI Desktop Bridge overview](https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-desktop-bridge-overview).
+3. **Fix and re-verify**: if a visual renders as an error icon or empty frame, fix the underlying `queryState` or role bindings through the authoring skill and repeat until both `validate-report` and the screenshots are clean.
+
+This mirrors the Report Authoring skill's own generate -> validate -> screenshot -> iterate loop, and keeps the WAF assessment's read-only boundary intact (all steps are local).
+
+## Publishing to Fabric (Phase 7, opt-in only)
+
+Publishing the validated PBIP is a separate step that requires explicit per-session user confirmation. It delegates to `powerbi-report-management` (Fabric REST CRUD via `az rest`). Two things to confirm before publish:
+
+- **Semantic model binding**: PBIR entity and query references must match the target workspace semantic model table names. The management skill verifies bindings before upload; a mismatch fails the publish.
+- **Long-running operations**: create and updateDefinition can return `202 Accepted`. Poll the operation to completion before proceeding.
+
 ## What this skill does NOT do (v1)
 
 - Ship a pre-built PBIX template: the schema reflects the actual pillar principles verified from Microsoft Learn at assessment time, which evolve.
@@ -223,3 +250,7 @@ These are our default tokens; align with the user's Power BI theme.
 - `common/FABRIC-WAF-CORE.md`: read-only boundary, recommendation format, scoring rubric
 - `references/export-formats.md`: Tier 1 formats
 - `references/assessment-workflow.md`: Phase 6 (local export) + Phase 7 (publish)
+- Power BI Report Authoring skill: https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-authoring-skill-overview
+- Power BI Report Design skill: https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-design-skill-overview
+- Power BI Report Planner + Management skills: https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-planner-fabric-skill-overview
+- Power BI Desktop Bridge: https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-desktop-bridge-overview
