@@ -60,6 +60,7 @@ Notes:
 | Authentication Recipes | [COMMON-CLI.md § Authentication Recipes](../../common/COMMON-CLI.md#authentication-recipes) | `az login`, token acquisition |
 | WAF Pillar Framework | [FABRIC-WAF-CORE.md](../../common/FABRIC-WAF-CORE.md) | 5 pillars, methodology, scoring rubric, recommendation format, glossary, read-only boundary, Azure WAF relationship |
 | Pillar deep-dives | [references/reliability.md](./references/reliability.md), [security.md](./references/security.md), [cost-optimization.md](./references/cost-optimization.md), [operational-excellence.md](./references/operational-excellence.md), [performance-efficiency.md](./references/performance-efficiency.md) | Per-principle evidence + tradeoffs |
+| CI/CD best practices | [references/cicd-best-practices.md](./references/cicd-best-practices.md) | Co-primary Operational Excellence source: Fabric ALM checklist, release-option tradeoffs, CI/CD evidence (also touches Security + Reliability) |
 | Cross-pillar tradeoffs | [references/tradeoffs.md](./references/tradeoffs.md) | Verbatim Learn quotes + cross-pillar synthesis |
 | Assessment workflow | [references/assessment-workflow.md](./references/assessment-workflow.md) | 7 phases incl. intake, pre-flight, sampling, redaction, failure recovery, re-assessment diff |
 | Report template | [references/assessment-report-template.md](./references/assessment-report-template.md) | Layered folder + per-principle block format |

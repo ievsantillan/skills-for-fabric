@@ -1,12 +1,18 @@
 <!-- VERIFIED: 2026-06-13 against https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/operational-excellence -->
+<!-- VERIFIED: 2026-07-03 against https://learn.microsoft.com/en-us/fabric/fundamentals/understand-best-practices-fabric-cicd -->
 
 # Operational Excellence: Fabric WAF Reference
 
 ## Source
 
-Microsoft Learn: [Operational excellence for Microsoft Fabric workloads](https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/operational-excellence)
+Co-primary sources for this pillar:
 
-> Re-fetch when authoring or updating this reference.
+- Microsoft Learn: [Operational excellence for Microsoft Fabric workloads](https://learn.microsoft.com/en-us/azure/well-architected/microsoft-fabric/operational-excellence) (the WAF pillar page; supplies the verbatim principles below)
+- Microsoft Learn: [Fabric CI/CD concepts and best practices](https://learn.microsoft.com/en-us/fabric/fundamentals/understand-best-practices-fabric-cicd) (the prescriptive ALM guidance; supplies the deploy/automate assessment criteria)
+
+> The CI/CD best-practices deep dive, including the full best-practice checklist, release-option tradeoffs, and CI/CD evidence items, lives in [`references/cicd-best-practices.md`](./cicd-best-practices.md). Use it alongside the "Deploy changes safely" and "Automate operations" principles here.
+
+> Re-fetch both pages when authoring or updating this reference and bump the matching VERIFIED stamp.
 
 ---
 
@@ -52,7 +58,9 @@ Match deployment rigor to workload complexity and impact. Compartmentalize: sepa
 
 Monitoring and progressive exposure make deploys controlled. Capture logs, configure failure alerts, roll out gradually. **Fabric has no one-click rollback**: your safety net is redeploying from Git or pipelines. Data consistency is the real rollback risk, not just code; multiple data stores may require careful reconciliation.
 
-**Evidence**: dev/test/prod workspace separation; deployment pipeline configuration; test coverage by workload type; approval gates per environment; rollback runbook.
+**CI/CD best-practice criteria (from the Fabric CI/CD guidance; see [`references/cicd-best-practices.md`](./cicd-best-practices.md)):** compartmentalize into dev/test/prod workspaces with a separate capacity each; build the development process on feature/branched workspaces with an integration-branch policy (pull-requests required, direct commits prohibited); pick a release mechanism (deployment pipeline for low-code small-to-medium projects, Git synchronization with post-sync jobs, or an API-driven `fabric-cicd` process for scale) and match its tradeoffs to project size and tenant topology; configure manual-approval gates (via pull requests, or repository environments for trunk-based development).
+
+**Evidence**: dev/test/prod workspace separation; deployment pipeline configuration; test coverage by workload type; approval gates per environment; rollback runbook; integration-branch policy; release mechanism in use (see `references/cicd-best-practices.md`).
 
 ### Automate operations
 
@@ -79,7 +87,9 @@ Use IaC to define capacities, workspaces, artifacts. Layered model (from Learn):
 
 Parameterize capacity SKUs, environment-specific endpoints, security roles, refresh schedules. Git as source of truth: detects drift and provides version control. Pipelines orchestrate IaC + Fabric solutions; use **GitHub Actions / Azure DevOps / Fabric Deployment Pipelines**. Validate with pre/post-deployment checks, unit/integration tests, environment-specific validations. Pipelines enforce approvals for prod and capture logs / trigger alerts on failures. Variable libraries and parameterization handle environment differences; **Fabric-CICD library** handles complex config changes.
 
-**Evidence**: IaC repository + layer structure; pipeline definitions; Git integration coverage; variable library / parameter file; drift-detection mechanism.
+**CI/CD best-practice criteria (from the Fabric CI/CD guidance; see [`references/cicd-best-practices.md`](./cicd-best-practices.md)):** prefer **Terraform** for infrastructure as code (workspaces, a separate capacity per environment, Storage / Key Vault, permissions, and connections), with the state file stored encrypted in protected cloud storage and connection credentials managed by Terraform; parameterize environment-specific settings with a **variable library** plus **value sets** for test/prod, using **connection reference** and **item reference** variables instead of hardcoded connection strings or cross-workspace IDs; use **service-principal-only** authentication for all automation (never user principals); enable **auto-binding** (`notebook-settings.json` for notebooks) or write **post-sync scripts** for item types that lack it; expose a single top-level orchestration item and a **post-deploy script**, and configure ongoing refresh via `.schedules` files in item definitions.
+
+**Evidence**: IaC repository + layer structure; pipeline definitions; Git integration coverage; variable library / value sets / reference variables; drift-detection mechanism; automation identity type (service principal); auto-binding / post-sync coverage (see `references/cicd-best-practices.md`).
 
 ### Monitor your environment
 
@@ -167,6 +177,12 @@ Tools (from Learn):
 - [ ] Dev/test/prod workspace separation: source: `[FabricAdmin]`
 - [ ] Deployment pipeline configuration: source: `[FabricAdmin]`
 - [ ] Git integration coverage: source: `[FabricAdmin]`
+- [ ] Integration-branch policy (PR-required, no direct commits): source: `[FabricAdmin]` + repo settings
+- [ ] Branching strategy documented (GitFlow / trunk-based): source: `[user-interview]`
+- [ ] Variable library + value sets + reference variables: source: `[FabricAdmin]`
+- [ ] Service-principal-only automation (no user principals): source: `[user-interview]` + repo/pipeline config
+- [ ] Release mechanism (deployment pipeline / Git sync / `fabric-cicd`): source: `[FabricAdmin]` + `[user-interview]`
+- [ ] Auto-binding (`notebook-settings.json`) / post-sync scripts: source: `[user-interview]`, `[spark-operations-cli]`
 - [ ] IaC repository for capacities/workspaces: source: `[user-interview]`
 - [ ] Monitoring tool enablement matrix: source: `[FabricAdmin]`
 - [ ] Alert rule inventory + escalation: source: `[user-interview]`
@@ -188,6 +204,7 @@ Tools (from Learn):
 ## See also
 
 - `common/FABRIC-WAF-CORE.md`
+- `references/cicd-best-practices.md` (co-primary CI/CD source: full best-practice checklist + release-option tradeoffs + CI/CD evidence)
 - `references/tradeoffs.md`
 - FUAM: https://github.com/microsoft/fabric-toolbox/tree/main/monitoring/fabric-unified-admin-monitoring
 - Delegate skills: `spark-operations-cli`, `sqldw-operations-cli`, `activator-consumption-cli`, `dataflows-consumption-cli`

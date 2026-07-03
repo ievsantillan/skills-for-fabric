@@ -90,6 +90,7 @@ Concrete evidence sources to try before interviewing (non-exhaustive):
 - **Capacity Metrics App** (CU utilization, throttling, SKU): query its semantic model with **DAX via the Power BI `executeQueries` API** (see `references/example-assessment.md` for the verified recipe). It is a Power BI model, not a KQL database.
 - **Secret-in-code** / retry / idempotency claims: fetch notebook and pipeline definitions (`POST .../items/{id}/getDefinition`) and inspect them, rather than asking.
 - **RBAC, tenant settings, Git, workspace identity, deployment pipelines**: Fabric REST.
+- **CI/CD posture** (Git integration + branch policy, variable libraries + value sets, deployment pipelines, service-principal-only automation, auto-binding): Fabric REST + repo/pipeline settings. Score against [`references/cicd-best-practices.md`](./cicd-best-practices.md), the co-primary Operational Excellence source.
 - **PIM, Conditional Access, audit logs, sensitivity labels**: Microsoft Graph (Graph PowerShell for PIM/labels; see the evidence-checklist tooling note).
 - **Cost**: Azure Cost Management (actuals) and the Retail Prices API (estimates).
 

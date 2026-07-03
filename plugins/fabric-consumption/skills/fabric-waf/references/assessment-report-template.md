@@ -144,6 +144,8 @@ assessment_version:
     cost_optimization: 2026-06-13
     operational_excellence: 2026-06-13
     performance_efficiency: 2026-06-13
+  supplementary_references_verified:
+    cicd_best_practices: 2026-07-03
   collected_at: <ISO timestamp>
   identity_used: <UPN or service principal name>
 ```

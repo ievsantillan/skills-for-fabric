@@ -38,24 +38,24 @@ assert not missing, "Missing export tooling:\n  " + "\n  ".join(sorted(set(missi
 
 The layered folder per `references/assessment-report-template.md` is markdown only by default. All other formats below are derived from it.
 
-### HTML (via pandoc) — recommended branded report
+### HTML (via pandoc): recommended branded report
 
 A single self-contained HTML file is the recommended shareable document format: it opens in any browser, needs only pandoc (no PDF engine, no LaTeX), and carries a branded header that mirrors the Azure Well-Architected Review results UI (banner, an overall-results gauge, and per-pillar scorecard cards with the official pillar icons).
 
 Two bundled assets drive the look (both in `references/assets/`, verified against the live Microsoft Learn WAF page 2026-06-21):
 
-- `report.css` — theme aligned to Learn's visual tokens (accent `#0F6CBD`, text `#161616`, Segoe UI). It also fixes pandoc's default ~36em body width that otherwise clips the wide 10-column recommendations table, and styles the banner / gauge / pillar cards.
-- `well-architected-hub.png` + `pillars/*.svg` — the official WAF hub image and the five pillar icons.
-- `gen_report_header.py` — a small generator that emits `_report-header.html` (banner + overall gauge + pillar cards) from the assessment's Met/Partial/Gap counts.
+- `report.css`: theme aligned to Learn's visual tokens (accent `#0F6CBD`, text `#161616`, Segoe UI). It also fixes pandoc's default ~36em body width that otherwise clips the wide 10-column recommendations table, and styles the banner / gauge / pillar cards.
+- `well-architected-hub.png` + `pillars/*.svg`: the official WAF hub image and the five pillar icons.
+- `gen_report_header.py`: a small generator that emits `_report-header.html` (banner + overall gauge + pillar cards) from the assessment's Met/Partial/Gap counts.
 
-**Step 1 — generate the themed header** (edit `META`/`PILLARS` in the script for the assessment, or import `build()`):
+**Step 1: generate the themed header** (edit `META`/`PILLARS` in the script for the assessment, or import `build()`):
 
 ```powershell
 $assets = "skills\fabric-waf\references\assets"
 python "$assets\gen_report_header.py" --assets "$assets" --out WAFAssessmentReport-2026-06-13\_report-header.html
 ```
 
-**Step 2 — build the self-contained HTML:**
+**Step 2: build the self-contained HTML:**
 
 ```powershell
 pandoc `
@@ -80,7 +80,7 @@ pandoc `
 >
 > **PATH note:** after `winget install`, `pandoc` is not on `PATH` until you open a new shell. Either start a new terminal, or call it by full path (commonly `%LOCALAPPDATA%\Pandoc\pandoc.exe`).
 >
-> **Branding note:** the WAF hub image and pillar icons are Microsoft Learn assets, and the Azure / Microsoft Fabric logos in the banner are official Microsoft marks (Fabric logo from the `@fabric-msft/svg-icons` npm package; Azure logo from the official Microsoft Azure brand). All are used here in a Microsoft Fabric WAF assessment context. Keep them in `references/assets/` (logos under `assets/logos/`); use the official, undistorted assets and do not recolor or stretch them. Do not embed Microsoft Learn's site CSS verbatim (proprietary, won't render standalone, and changes without notice) — the bundled `report.css` re-creates the look from public design tokens.
+> **Branding note:** the WAF hub image and pillar icons are Microsoft Learn assets, and the Azure / Microsoft Fabric logos in the banner are official Microsoft marks (Fabric logo from the `@fabric-msft/svg-icons` npm package; Azure logo from the official Microsoft Azure brand). All are used here in a Microsoft Fabric WAF assessment context. Keep them in `references/assets/` (logos under `assets/logos/`); use the official, undistorted assets and do not recolor or stretch them. Do not embed Microsoft Learn's site CSS verbatim (proprietary, won't render standalone, and changes without notice): the bundled `report.css` re-creates the look from public design tokens.
 
 ### Excel (via openpyxl, against `recommendations.md`)
 

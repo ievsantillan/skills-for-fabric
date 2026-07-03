@@ -65,16 +65,26 @@ Consolidated per-pillar evidence items the assessment gathers. Each item is tagg
 
 - [ ] Documented roles + on-call rotation: `[user-interview]`
 - [ ] Certification inventory (DP-600, DP-700): `[user-interview]`
-- [ ] Dev / test / prod workspace separation: `[FabricAdmin]`
+- [ ] Dev / test / prod workspace separation + separate capacity each: `[FabricAdmin]`
 - [ ] Deployment pipeline configuration: `[FabricAdmin]`
 - [ ] Git integration coverage: `[FabricAdmin]`
-- [ ] IaC repository for capacities / workspaces: `[user-interview]`
+- [ ] Integration-branch policy (PR-required, no direct commits): `[FabricAdmin]` + repo settings
+- [ ] Branching strategy documented (GitFlow / trunk-based): `[user-interview]`
+- [ ] Variable library + value sets + connection/item reference variables: `[FabricAdmin]`, `[dataflows-consumption-cli]`
+- [ ] Hardcoded connection-settings scan (should be none): `[spark-operations-cli]`, `[dataflows-consumption-cli]`
+- [ ] Service-principal-only automation (no user principals): `[user-interview]` + repo/pipeline config
+- [ ] Release mechanism (deployment pipeline / Git sync / `fabric-cicd`): `[FabricAdmin]` + `[user-interview]`
+- [ ] Manual-approval gates for prod deployment: `[FabricAdmin]` + repo settings
+- [ ] Auto-binding (`notebook-settings.json`) / post-sync scripts: `[user-interview]`, `[spark-operations-cli]`
+- [ ] IaC repository for capacities / workspaces + encrypted Terraform state: `[user-interview]`
 - [ ] Monitoring tool enablement matrix (Capacity Metrics App, Workspace Monitoring, OneLake Diagnostics, FUAM): `[FabricAdmin]`
 - [ ] Alert rule inventory + escalation: `[user-interview]`
 - [ ] Audit log retention / export beyond 30 days: `[FabricAdmin]`
 - [ ] BCDR enablement on critical capacities: `[FabricAdmin]`
 - [ ] Last DR drill date + result: `[user-interview]`
 - [ ] Test suite inventory per layer: `[user-interview]`
+
+> The CI/CD-specific rows above (integration-branch policy through auto-binding, plus release mechanism) are detailed in [`cicd-best-practices.md`](./cicd-best-practices.md), the co-primary Operational Excellence source.
 
 ## Performance Efficiency
 

@@ -118,7 +118,9 @@ Verify controls behave as expected:
 
 Connect workspaces to Git (Azure DevOps or GitHub). Branch, PR, code review. Use **Fabric Deployment Pipelines** for promotion across dev/test/prod with approvals and stage checks. Integrate security validation: static analysis, secret detection, dependency scanning. Handle sensitive config via Key Vault references or parameterization. Separate dev from prod; conditional access can restrict dev to managed devices.
 
-**Evidence**: Git integration coverage per workspace; PR review enforcement; deployment pipeline approval gates; secret-scan and SAST integration in CI; conditional access for dev environments.
+**CI/CD security criteria (from the Fabric CI/CD guidance; see [`references/cicd-best-practices.md`](./cicd-best-practices.md)):** use **service principal authentication for all DevOps and CI/CD automation**, never user principals; **never commit files with sensitive credentials to Git**; let Terraform manage connection credentials (for example SAS tokens) so secrets stay encrypted, and store the Terraform state file encrypted in protected cloud storage; remove environment-specific connection settings from item definitions by using variable-library connection reference variables rather than hardcoded strings.
+
+**Evidence**: Git integration coverage per workspace; PR review enforcement; deployment pipeline approval gates; secret-scan and SAST integration in CI; conditional access for dev environments; automation identity type (service principal vs user); Terraform state encryption; secret-free item definitions and workflow files.
 
 ---
 
@@ -138,6 +140,9 @@ Connect workspaces to Git (Azure DevOps or GitHub). Branch, PR, code review. Use
 - [ ] Audit log retention configuration: source: `[FabricAdmin]`
 - [ ] Git integration + PR review enforcement: source: `[FabricAdmin]`
 - [ ] Deployment pipeline approval gates: source: `[FabricAdmin]`
+- [ ] Service-principal-only automation (no user principals): source: `[user-interview]` + repo/pipeline config
+- [ ] No secrets committed to Git (secret-scan clean incl. workflow files): source: source-control scan
+- [ ] Terraform state encrypted + connection credentials Terraform-managed: source: `[user-interview]`
 
 ---
 
@@ -152,6 +157,7 @@ Connect workspaces to Git (Azure DevOps or GitHub). Branch, PR, code review. Use
 ## See also
 
 - `common/FABRIC-WAF-CORE.md`
+- `references/cicd-best-practices.md` (service-principal automation + no-committed-secrets criteria)
 - `references/tradeoffs.md`
 - `references/assessment-workflow.md`
 - Delegate skills: `search-consumption-cli`, `sqldw-consumption-cli`, `spark-operations-cli`, `dataflows-consumption-cli`

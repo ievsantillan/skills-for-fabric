@@ -113,7 +113,9 @@ Most Fabric items rely on continuous replication, not traditional backups. OneLa
 
 > **Important (from Learn)**: Don't wait for a real incident to find out the plan doesn't work. Simulate outages, execute failover, practice failback, measure recovery times, validate data integrity.
 
-**Evidence**: documented RTO/RPO per workload; last DR simulation date; failover/failback runbooks; backup coverage for non-OneLake assets.
+**Rollback / redeploy (from the Fabric CI/CD guidance; see [`references/cicd-best-practices.md`](./cicd-best-practices.md)):** Fabric has **no one-click rollback**. The recovery path for a bad change is redeploying an earlier item version from Git or a deployment pipeline, which makes Git the single source of truth a reliability control, not just an OpEx one. Data consistency is the real rollback risk: reverting item definitions does not undo data writes, so multiple data stores may need careful reconciliation. Isolating each environment on its own capacity (a CI/CD project-setup practice) also limits the blast radius of a failed deployment.
+
+**Evidence**: documented RTO/RPO per workload; last DR simulation date; failover/failback runbooks; backup coverage for non-OneLake assets; Git/pipeline redeploy-based rollback runbook; per-environment capacity isolation.
 
 ### Test reliability
 
@@ -135,6 +137,8 @@ Direct chaos testing inside Fabric is not available. Validate environment and de
 - [ ] Workspace Monitoring enabled status: source: `[FabricAdmin]`
 - [ ] Health-check probes inventory: source: `[user-interview]` + `[activator-consumption-cli]`
 - [ ] Dependency map (external systems and their SLAs): source: `[user-interview]`
+- [ ] Git/pipeline redeploy-based rollback runbook: source: `[user-interview]`
+- [ ] Per-environment capacity isolation (blast-radius control): source: `[FabricAdmin]`
 
 ---
 
@@ -150,5 +154,6 @@ Direct chaos testing inside Fabric is not available. Validate environment and de
 
 - `common/FABRIC-WAF-CORE.md`: scoring rubric, recommendation format, glossary
 - `references/tradeoffs.md`: cross-pillar tradeoffs in detail
+- `references/cicd-best-practices.md`: redeploy-from-Git rollback + per-environment capacity isolation
 - `references/assessment-workflow.md`: how to gather this evidence
 - Delegate skills: `spark-operations-cli`, `sqldw-operations-cli`, `eventhouse-consumption-cli`, `activator-consumption-cli`, `dataflows-consumption-cli`

@@ -33,7 +33,7 @@ DAX "EVALUATE FILTER('Items Throttled', 'Items Throttled'[Capacity Id]=""<CAP-GU
 Verified facts:
 - Import-mode tables (`Capacities`, `Items Throttled`) query reliably. **DirectQuery** detail
   tables (`Metrics By Item And Day`, `Usage Summary (Last 14 days)`, `Surge Protection By Day`)
-  return `Error obtaining data location` when the capacity is **paused** — so live CU% needs the
+  return `Error obtaining data location` when the capacity is **paused**, so live CU% needs the
   capacity resumed and the model refreshed.
 - `Capacity Id` in `Items Throttled` is UPPERCASE.
 - The Metrics App is itself a periodically-refreshed model: its SKU/state can lag the live
@@ -42,7 +42,7 @@ Verified facts:
 
 ---
 
-## Capacity Metrics App: top-consuming items (KQL — illustrative only, unverified)
+## Capacity Metrics App: top-consuming items (KQL, illustrative only, unverified)
 
 > The KQL blocks in this section are illustrative pseudo-queries and were **not** verified against a live model. The Metrics App is a Power BI semantic model: prefer the verified DAX recipe above. These remain as a conceptual reference for the kind of data available.
 
