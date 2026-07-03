@@ -10,27 +10,60 @@ The "WAF index" is a transparent maturity indicator derived from the categorical
 scores: index = (Met*1 + Partial*0.5 + Gap*0) / principles * 100. It is NOT the Azure WAR
 questionnaire score, and is distinct from recommendation *severity*.
 """
-import os, html, argparse
+import os, html, argparse, json
 
-# --- Per-assessment inputs (edit these) -------------------------------------
+# --- Per-assessment inputs -------------------------------------------------
+# Prefer `--scorecard <path>` to load these from the canonical scorecard.json so
+# the header index always matches scorecard.json / README. The values below are a
+# fallback example used only when no scorecard is supplied.
 META = {
     "title": "Microsoft Fabric Well-Architected Framework Assessment",
     "workspace": "Unified Data Foundation with Fabric",
     "mode": "e2e (all 5 pillars)",
     "date": "2026-06-20",
 }
-# (pillar key, display name, icon file, Met, Partial, Gap)
+# (pillar key, display name, icon file, Met, Partial, Gap, Not assessed)
 PILLARS = [
-    ("reliability", "Reliability", "reliability.svg", 0, 5, 4),
-    ("security", "Security", "security.svg", 1, 5, 4),
-    ("cost-optimization", "Cost Optimization", "cost-optimization.svg", 1, 5, 0),
-    ("performance-efficiency", "Performance Efficiency", "performance-efficiency.svg", 0, 4, 2),
-    ("operational-excellence", "Operational Excellence", "operational-excellence.svg", 0, 4, 2),
+    ("reliability", "Reliability", "reliability.svg", 0, 5, 4, 0),
+    ("security", "Security", "security.svg", 1, 5, 4, 0),
+    ("cost-optimization", "Cost Optimization", "cost-optimization.svg", 1, 5, 0, 0),
+    ("performance-efficiency", "Performance Efficiency", "performance-efficiency.svg", 0, 4, 2, 0),
+    ("operational-excellence", "Operational Excellence", "operational-excellence.svg", 0, 4, 2, 0),
 ]
+_ICONS = {
+    "reliability": "reliability.svg", "security": "security.svg",
+    "cost-optimization": "cost-optimization.svg",
+    "performance-efficiency": "performance-efficiency.svg",
+    "operational-excellence": "operational-excellence.svg",
+}
+_NAMES = {
+    "reliability": "Reliability", "security": "Security",
+    "cost-optimization": "Cost Optimization",
+    "performance-efficiency": "Performance Efficiency",
+    "operational-excellence": "Operational Excellence",
+}
 # ----------------------------------------------------------------------------
 
-def index_of(met, partial, gap):
-    total = met + partial + gap
+def load_scorecard(path):
+    """Populate META and PILLARS from a scorecard.json so the header matches it."""
+    global META, PILLARS
+    sc = json.load(open(path, encoding="utf-8"))
+    a = sc["assessment"]
+    META = {
+        "title": "Microsoft Fabric Well-Architected Framework Assessment",
+        "workspace": ", ".join(a["scope"].get("workspace_ids", [])) or "(scope)",
+        "mode": a.get("mode", ""),
+        "date": a.get("assessment_date", ""),
+    }
+    order = ["reliability", "security", "cost-optimization", "performance-efficiency", "operational-excellence"]
+    pc = {p["pillar_key"]: p["counts"] for p in sc["pillars"]}
+    PILLARS = [(k, _NAMES[k], _ICONS[k], pc[k]["met"], pc[k]["partial"], pc[k]["gap"], pc[k]["not_assessed"])
+               for k in order if k in pc]
+
+def index_of(met, partial, gap, not_assessed=0):
+    # Denominator = ALL principles (including Not assessed), matching
+    # scorecard.json waf_index. Keeps HTML, README, and scorecard.json consistent.
+    total = met + partial + gap + not_assessed
     return 0 if total == 0 else round((met * 1.0 + partial * 0.5) / total * 100)
 
 def band(score):
@@ -44,12 +77,13 @@ def gauge(score, mini=False):
             f'<span class="gauge-marker" style="left:{score}%"></span></div></div>')
 
 def build(assets_dir):
-    omet = sum(p[3] for p in PILLARS); opar = sum(p[4] for p in PILLARS); ogap = sum(p[5] for p in PILLARS)
-    oidx = index_of(omet, opar, ogap); olabel, ocls = band(oidx)
+    omet = sum(p[3] for p in PILLARS); opar = sum(p[4] for p in PILLARS)
+    ogap = sum(p[5] for p in PILLARS); ona = sum(p[6] for p in PILLARS)
+    oidx = index_of(omet, opar, ogap, ona); olabel, ocls = band(oidx)
 
     cards = []
-    for key, name, icon, met, par, gap in PILLARS:
-        idx = index_of(met, par, gap); lbl, cls = band(idx)
+    for key, name, icon, met, par, gap, na in PILLARS:
+        idx = index_of(met, par, gap, na); lbl, cls = band(idx)
         icon_path = os.path.join(assets_dir, "pillars", icon).replace("\\", "/")
         cards.append(f'''  <article class="pillar-card">
     <div class="pillar-card-head">
@@ -58,7 +92,7 @@ def build(assets_dir):
     </div>
     {gauge(idx, mini=True)}
     <div class="pillar-score"><span class="badge badge-{cls}">{lbl}</span> <span class="idx">{idx}/100</span></div>
-    <div class="pillar-counts"><span class="met">{met} Met</span> &middot; <span class="par">{par} Partial</span> &middot; <span class="gap">{gap} Gap</span></div>
+    <div class="pillar-counts"><span class="met">{met} Met</span> &middot; <span class="par">{par} Partial</span> &middot; <span class="gap">{gap} Gap</span> &middot; <span class="na">{na} Not assessed</span></div>
   </article>''')
 
     hub = os.path.join(assets_dir, "well-architected-hub.png").replace("\\", "/")
@@ -87,9 +121,9 @@ def build(assets_dir):
         {gauge(oidx)}
         <div class="gauge-scale"><span>CRITICAL 0-33</span><span>MODERATE 33-67</span><span>EXCELLENT 67-100</span></div>
       </div>
-      <div class="overall-num"><span class="big">{oidx}</span><span class="den">/100</span><div class="counts-line">{omet} Met &middot; {opar} Partial &middot; {ogap} Gap</div></div>
+      <div class="overall-num"><span class="big">{oidx}</span><span class="den">/100</span><div class="counts-line">{omet} Met &middot; {opar} Partial &middot; {ogap} Gap &middot; {ona} Not assessed</div></div>
     </div>
-    <p class="index-note">Derived WAF index = (Met&times;1 + Partial&times;0.5 + Gap&times;0) &divide; principles &times; 100. This is our own maturity indicator from the categorical pillar scores; it is <em>not</em> the Azure WAR questionnaire score and is distinct from recommendation <em>severity</em>.</p>
+    <p class="index-note">Derived WAF index = (Met&times;1 + Partial&times;0.5 + Gap&times;0) &divide; all principles (including Not assessed) &times; 100, matching scorecard.json. This is our own maturity indicator from the categorical pillar scores; it is <em>not</em> the Azure WAR questionnaire score and is distinct from recommendation <em>severity</em>.</p>
   </div>
 
   <h2 class="exec-title">Pillars</h2>
@@ -103,6 +137,9 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--assets", required=True, help="path to skills/fabric-waf/references/assets")
     ap.add_argument("--out", default="_report-header.html", help="output header HTML path")
+    ap.add_argument("--scorecard", help="path to scorecard.json (loads META + pillar counts so the header matches it)")
     a = ap.parse_args()
+    if a.scorecard:
+        load_scorecard(a.scorecard)
     open(a.out, "w", encoding="utf-8").write(build(a.assets))
     print("wrote", a.out)

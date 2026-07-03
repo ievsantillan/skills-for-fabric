@@ -48,12 +48,14 @@ Two bundled assets drive the look (both in `references/assets/`, verified agains
 - `well-architected-hub.png` + `pillars/*.svg`: the official WAF hub image and the five pillar icons.
 - `gen_report_header.py`: a small generator that emits `_report-header.html` (banner + overall gauge + pillar cards) from the assessment's Met/Partial/Gap counts.
 
-**Step 1: generate the themed header** (edit `META`/`PILLARS` in the script for the assessment, or import `build()`):
+**Step 1: generate the themed header** (prefer `--scorecard` so the header index matches `scorecard.json` exactly; the script reads META and per-pillar counts from it):
 
 ```powershell
 $assets = "skills\fabric-waf\references\assets"
-python "$assets\gen_report_header.py" --assets "$assets" --out WAFAssessmentReport-2026-06-13\_report-header.html
+python "$assets\gen_report_header.py" --assets "$assets" --scorecard WAFAssessmentReport-2026-06-13\scorecard.json --out WAFAssessmentReport-2026-06-13\_report-header.html
 ```
+
+(Without `--scorecard`, edit the fallback `META` / `PILLARS` in the script, or import `build()`.)
 
 **Step 2: build the self-contained HTML:**
 
@@ -76,7 +78,7 @@ pandoc `
 
 `--css ...\report.css` applies the theme; `--include-in-header ...\report-head.html` adds the early light/dark theme-init script (in `<head>`, so there is no flash of the wrong theme); `--include-before-body _report-header.html` injects the banner + gauge + cards + theme toggle button; `--embed-resources` base64-inlines the CSS, banner PNG, and pillar SVGs so the single `.html` is fully portable; `-s` makes it standalone; `--toc` builds the navigation contents; **`--syntax-highlighting=none`** disables pandoc's code coloring (its dark-on-dark highlight palette is unreadable in dark mode; `report.css` styles fenced code blocks for both themes instead).
 
-> **Verified 2026-06-21.** Produces a ~710 KB self-contained HTML (the embedded banner image and SVG icons account for the size) with the WAR-style header, all report tables fully visible (every recommendation column fits and wraps), and a navigable TOC. **Light/dark mode**: the report follows the reader's OS preference by default and has a toggle button (top-right) that overrides it and persists the choice to `localStorage`; verified in both modes by browser screenshot. No external file references, so it can be emailed or hosted as-is. The "WAF index" on the gauge/cards is a transparent maturity indicator: `(Met*1 + Partial*0.5 + Gap*0) / principles * 100`. It is NOT the Azure WAR questionnaire score and is distinct from recommendation severity.
+> **Verified 2026-06-21.** Produces a ~710 KB self-contained HTML (the embedded banner image and SVG icons account for the size) with the WAR-style header, all report tables fully visible (every recommendation column fits and wraps), and a navigable TOC. **Light/dark mode**: the report follows the reader's OS preference by default and has a toggle button (top-right) that overrides it and persists the choice to `localStorage`; verified in both modes by browser screenshot. No external file references, so it can be emailed or hosted as-is. The "WAF index" on the gauge/cards is a transparent maturity indicator: `(Met*1 + Partial*0.5 + Gap*0) / all principles (including Not assessed) * 100`, the same denominator as `scorecard.json` `waf_index` so the header, README, and scorecard stay consistent. It is NOT the Azure WAR questionnaire score and is distinct from recommendation severity.
 >
 > **PATH note:** after `winget install`, `pandoc` is not on `PATH` until you open a new shell. Either start a new terminal, or call it by full path (commonly `%LOCALAPPDATA%\Pandoc\pandoc.exe`).
 >

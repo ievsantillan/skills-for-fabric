@@ -198,6 +198,7 @@ html[data-theme="dark"] .theme-toggle .icon-light { display: none; }
 .pillar-counts { margin-top: .4rem; font-size: .76rem; color: var(--waf-muted); }
 .pillar-counts .met { color: var(--waf-exc); font-weight: 600; }
 .pillar-counts .gap { color: var(--waf-crit); font-weight: 600; }
+.pillar-counts .na { color: #8a8886; font-weight: 600; }
 html[data-theme="dark"] .pillar-counts .met { color: #5cc25c; }
 html[data-theme="dark"] .pillar-counts .gap { color: #ef6b6f; }
 
