@@ -74,6 +74,7 @@ Every recommendation row uses this shape:
 
 | Field | Required | Example |
 |---|---|---|
+| `id` | Yes | Stable per-pillar ID (`R001` reliability, `SR001` security, `CR001` cost, `OR001` operational-excellence, `PR001` performance); `C001` for a deduped cross-pillar theme. IDs are stable across runs (see below). |
 | `pillars` | Yes | `[cost-optimization, performance-efficiency]` (single or multiple if cross-pillar) |
 | `principle` | Yes | Verbatim H2 from the relevant pillar Learn page |
 | `severity` | Yes | `Critical` / `High` / `Medium` / `Low` (see scale below) |
@@ -84,6 +85,10 @@ Every recommendation row uses this shape:
 | `learn_citation` | Yes | Verbatim heading text from the Learn pillar page (not slugified anchor) |
 | `fabric_features` | Yes | Named Fabric features that close the gap (e.g., Capacity Metrics App, Workspace Monitoring, Activator) |
 | `status` | Yes | `Open` / `In progress` / `Done` / `Risk accepted` |
+
+### Stable IDs and carry-forward (re-assessment)
+
+So a customer can track "did we close OR003?" across a baseline and later runs, each recommendation has a deterministic `stable_key` = `"<primary-pillar>::<principle-slug>::<normalized-action-slug>"` (the action slug drops specific capacity/workspace names, GUIDs, and numbers). On a re-assessment (when `previous_assessment_folder` is set), match current recommendations to the previous run's `scorecard.json` by `stable_key` and **reuse the prior `id` and `first_seen`**, and **carry forward `status` and `risk_accepted`** rather than resetting to `Open`. Fresh evidence still wins: a previously `Done` or `Risk accepted` item that is a `Gap` again flips back to `Open` and is surfaced as a regression in the diff. Full algorithm and the `scorecard.json` contract: `skills/fabric-waf/references/scorecard-schema.md`.
 
 ### Severity scale (our convention)
 
@@ -132,6 +137,8 @@ FabricWAF **MUST NEVER mutate Fabric tenant state**:
 - Delegating to `powerbi-report-authoring` and `semantic-model-authoring` for local PBIP/TMDL generation is allowed within Phase 6 export.
 
 **Publishing artifacts to Fabric is a separate explicit step** (Phase 7 in the agent framework). Defaults to off; requires explicit user confirmation per session; delegates to `powerbi-report-management`.
+
+**Persisting scorecards to a Fabric Warehouse for cross-run BI (Tier 2)** is likewise a separate, opt-in, post-redaction step outside the assessment. It is the only place `sqldw-authoring-cli` (write-capable) is used, and only on explicit confirmation. A hosted Rayfin portal (Tier 3) has the same boundary. See `skills/fabric-waf/references/trend-storage.md`.
 
 ---
 

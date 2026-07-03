@@ -64,8 +64,10 @@ Notes:
 | Cross-pillar tradeoffs | [references/tradeoffs.md](./references/tradeoffs.md) | Verbatim Learn quotes + cross-pillar synthesis |
 | Assessment workflow | [references/assessment-workflow.md](./references/assessment-workflow.md) | 7 phases incl. intake, pre-flight, sampling, redaction, failure recovery, re-assessment diff |
 | Report template | [references/assessment-report-template.md](./references/assessment-report-template.md) | Layered folder + per-principle block format |
+| Scorecard schema | [references/scorecard-schema.md](./references/scorecard-schema.md) | `scorecard.json` trend/diff contract, stable recommendation IDs, `WAFAssessmentHistory.md` index |
 | Evidence checklist | [references/evidence-checklist.md](./references/evidence-checklist.md) | Per-pillar at-a-glance index with source tags |
 | Export formats | [references/export-formats.md](./references/export-formats.md) | HTML / Excel / Word / CSV; PBIP via [references/export-pbip.md](./references/export-pbip.md) |
+| Trend storage (opt-in) | [references/trend-storage.md](./references/trend-storage.md) | Tier 2 Fabric Warehouse persistence + Tier 3 Rayfin portal (opt-in tenant writes, outside the read-only boundary) |
 | Monitoring accelerators | [references/monitoring-accelerators.md](./references/monitoring-accelerators.md) | Five Fabric Toolbox monitoring solutions + "which to use when" + pillar mapping |
 | Concrete example queries | [references/example-assessment.md](./references/example-assessment.md) | KQL + T-SQL + REST samples |
 | Must/Prefer/Avoid | [SKILL.md § Must/Prefer/Avoid](#mustpreferavoid) | Guardrails: read this in full |
@@ -116,8 +118,8 @@ See `references/assessment-workflow.md` for the full 7-phase workflow. Summary:
 3. **Evidence gathering**: cascade: FabricAdmin for tenant/workspace; `-cli` skills for item-level; sample with documented criteria when item count > 50
 4. **Scoring**: per principle: Met / Partial / Gap / Not assessed
 5. **Recommendations**: severity + effort + Learn citation + Fabric feature; dedup across pillars
-6. **Report emission (local)**: markdown layered folder always; optional HTML / Excel / Word / CSV / PBIP
-7. **Publish (optional)**: explicit per-session confirmation required; delegates to `powerbi-report-management`
+6. **Report emission (local)**: markdown layered folder + `scorecard.json` (trend/diff contract) + append `WAFAssessmentHistory.md`; optional HTML / Excel / Word / CSV / PBIP
+7. **Publish (optional)**: explicit per-session confirmation required; delegates to `powerbi-report-management`. Persisting scorecards to a Fabric Warehouse for cross-run BI is a separate opt-in step (`references/trend-storage.md`)
 
 ## Must/Prefer/Avoid
 
@@ -165,6 +167,7 @@ See `references/assessment-workflow.md` for the full 7-phase workflow. Summary:
 | Cross-workspace item discovery | `search-consumption-cli` |
 | PBIP authoring (local only, Phase 6) | `powerbi-report-authoring`, `semantic-model-authoring` |
 | Publish PBIP to Fabric (Phase 7, opt-in only) | `powerbi-report-management` |
+| Persist scorecards to a Fabric Warehouse (Tier 2, opt-in only) | `sqldw-authoring-cli` (see `references/trend-storage.md`) |
 
 ## Examples
 

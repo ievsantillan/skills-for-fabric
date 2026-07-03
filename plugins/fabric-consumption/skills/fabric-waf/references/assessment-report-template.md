@@ -11,6 +11,7 @@ Default folder structure for a Fabric WAF assessment report. Layered folder shap
 ```
 WAFAssessmentReport-YYYY-MM-DD/
 ├── README.md                       # Executive summary (scorecard, top risks, top quick wins)
+├── scorecard.json                  # Machine-readable snapshot (trend/diff contract; see scorecard-schema.md)
 ├── reliability.md                  # Per-principle blocks (Standard detail)
 ├── security.md
 ├── cost-optimization.md
@@ -28,6 +29,15 @@ WAFAssessmentReport-YYYY-MM-DD/
     ├── workspace-inventory/        # T-SQL / REST API outputs
     └── item-cli/                   # Output from each -cli skill, one folder per skill
 ```
+
+Alongside the dated folders (in their parent directory, NOT inside each run) two trend files persist across runs:
+
+```
+WAFAssessmentHistory.md             # One row per run: date, mode, scope, per-pillar index, open Critical/High, diff link
+history.csv                         # Same columns, for spreadsheet charts and Tier 2 Warehouse load
+```
+
+Both trend files are index/count only (no UPNs or GUIDs) so they are safe to retain long-term even when the full `WAFAssessmentReport-*/` folders (which may contain PII) are not. Format and the `scorecard.json` schema: `references/scorecard-schema.md`.
 
 Mode scaling:
 

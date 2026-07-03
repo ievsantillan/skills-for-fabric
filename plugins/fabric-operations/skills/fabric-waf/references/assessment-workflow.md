@@ -152,6 +152,7 @@ For each principle, assign one of `Met`, `Partial`, `Gap`, `Not assessed` per th
 
 Generate recommendations using the format documented in `common/FABRIC-WAF-CORE.md`:
 
+- `id` (stable per-pillar ID; assigned after dedup, see below)
 - `pillars` (single or multiple; dedup across pillars at end of phase)
 - `principle` (verbatim H2 from the relevant Learn page)
 - `severity` (Critical / High / Medium / Low: our convention)
@@ -165,13 +166,15 @@ Generate recommendations using the format documented in `common/FABRIC-WAF-CORE.
 
 **Dedup pass**: after all per-pillar scoring is complete, merge recommendations that target the same action (e.g., "right-size capacity" surfaced from both Cost and Performance). The merged row's `pillars` field lists every pillar that surfaced it.
 
+**Stable ID assignment (after dedup)**: compute each recommendation's `stable_key` (`<primary-pillar>::<principle-slug>::<normalized-action-slug>`). If `intake.previous_assessment_folder` is set, load its `scorecard.json`, match by `stable_key`, and reuse the prior `id` and `first_seen` and carry forward `status` / `risk_accepted`; assign fresh per-pillar IDs only to new `stable_key`s. Full algorithm: `references/scorecard-schema.md`.
+
 ---
 
 ## Phase 6: Report emission (local)
 
 Write the report folder to disk per the structure in `references/assessment-report-template.md`. Default folder name `WAFAssessmentReport-YYYY-MM-DD/` (our convention: user can override).
 
-Markdown is always generated. Other export formats are additive per the intake selection: see `references/export-formats.md` and (for PBIP) `references/export-pbip.md`.
+Markdown is always generated. Also always emit **`scorecard.json`** (the machine-readable trend/diff contract in `references/scorecard-schema.md`) into the folder, and append one row to **`WAFAssessmentHistory.md`** and **`history.csv`** in the parent directory. Other export formats are additive per the intake selection: see `references/export-formats.md` and (for PBIP) `references/export-pbip.md`. Persisting the scorecard to a Fabric Warehouse for cross-run BI is an opt-in Tier 2 step in `references/trend-storage.md`.
 
 This phase touches local disk only. No mutation of Fabric tenant state.
 
@@ -191,15 +194,17 @@ Only runs when `output.publish_to_fabric == true` and the user explicitly confir
 
 When `intake.previous_assessment_folder` points to an existing `WAFAssessmentReport-YYYY-MM-DD/` folder:
 
-1. Run Phases 1–5 as usual.
-2. Before emitting the report, load the previous assessment's per-pillar scores and recommendations.
+1. Run Phases 1-5 as usual.
+2. Load the previous run's **`scorecard.json`** (deterministic; do not re-parse the previous markdown). Build the `stable_key` map used for ID reuse and status/risk carry-forward (Phase 5).
 3. Compute deltas:
    - **Closed gaps**: previously `Gap` or `Partial`, now `Met`
    - **New gaps**: previously `Met`, now `Gap` or `Partial`
-   - **Score deltas per pillar**: count of Met / Partial / Gap / Not assessed in each run, with delta
-   - **Recommendation churn**: closed, new, persisting; surface persistence-of-Critical-or-High recommendations across two consecutive runs
-4. Write the diff as `diff-vs-<prev-date>.md` inside the new dated folder.
-5. The executive `README.md` of the new folder links to the diff prominently.
+   - **Regressions**: a recommendation previously `Done` or `Risk accepted` whose principle is a `Gap`/`Partial` again (flip its status back to `Open`)
+   - **Score deltas per pillar**: count of Met / Partial / Gap / Not assessed in each run, with delta, plus `waf_index` delta
+   - **Recommendation churn**: closed, new, persisting (matched by `stable_key`); surface persistence of Critical-or-High recommendations across two consecutive runs, with age-of-finding from `first_seen`
+4. **Methodology-drift check**: compare `assessment.methodology` across the two `scorecard.json` files. If any pillar's VERIFIED date or `principle_count` changed, add a drift note and mark that pillar's index/score deltas as indicative, not exact. Never report an index change caused by a changed denominator as a regression.
+5. Write the diff as `diff-vs-<prev-date>.md` inside the new dated folder.
+6. The executive `README.md` of the new folder links to the diff prominently, and `WAFAssessmentHistory.md` gains the new row.
 
 ---
 
@@ -207,7 +212,9 @@ When `intake.previous_assessment_folder` points to an existing `WAFAssessmentRep
 
 - `common/FABRIC-WAF-CORE.md`: rubric, recommendation format, glossary, boundaries
 - `references/assessment-report-template.md`: output structure + redaction
+- `references/scorecard-schema.md`: `scorecard.json` contract, stable IDs, history index
 - `references/evidence-checklist.md`: per-pillar evidence items
 - `references/export-formats.md`: markdown + HTML/Excel/Word/CSV
 - `references/export-pbip.md`: optional PBIP project
+- `references/trend-storage.md`: opt-in Tier 2 Warehouse persistence + Tier 3 Rayfin portal
 - `references/example-assessment.md`: concrete sample with runnable queries

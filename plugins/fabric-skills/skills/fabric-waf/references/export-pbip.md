@@ -20,6 +20,12 @@ Optionally, for the page layout brief, `powerbi-report-design` (archetype, chart
 
 ---
 
+## Data source: the scorecard.json series
+
+The PBIP loads from the **`scorecard.json`** files emitted per run (contract in `references/scorecard-schema.md`), NOT by parsing the markdown reports. Each run's `scorecard.json` maps directly onto the star schema below (its `assessment`, `pillars`, `principles`, `recommendations`, and `tradeoffs` sections become the fact/dimension rows). Point the model at the folder of `WAFAssessmentReport-*/scorecard.json` files (or the parent `history.csv` for the lightweight trend), so adding a new assessment is just adding its `scorecard.json` to the source. This makes the multi-run trend deterministic and keeps a single contract shared with the Tier 2 Warehouse in `references/trend-storage.md`.
+
+---
+
 ## Star schema
 
 The semantic model is a star schema. Facts capture each assessment run; dimensions describe the framework.
@@ -215,8 +221,8 @@ These are our default tokens; align with the user's Power BI theme.
 ## Refresh strategy
 
 - **Import mode**: assessment data is static per run; live connection adds complexity for little gain.
-- **Per-assessment regeneration**: each new assessment regenerates the PBIP from the latest `WAFAssessmentReport-*/` folder. Incremental append from a history folder is a future enhancement.
-- **Re-assessment / diff**: when re-running, the previous folder's Findings and Recommendations are loaded into a separate `History` table; the diff page surfaces score deltas.
+- **Per-assessment regeneration**: each new assessment adds its `scorecard.json` to the source folder and the model reloads the full series. Because rows key on the stable recommendation `id` and `assessment_key`, history accumulates without duplicates.
+- **Re-assessment / diff**: the `scorecard.json` series already carries every run, so the diff page filters `Findings` and `Recommendations` by `assessment_key` and computes score deltas via the `Score Delta vs Previous Assessment` measure. No separate `History` load step is needed.
 
 ---
 
@@ -248,6 +254,8 @@ Publishing the validated PBIP is a separate step that requires explicit per-sess
 ## See also
 
 - `common/FABRIC-WAF-CORE.md`: read-only boundary, recommendation format, scoring rubric
+- `references/scorecard-schema.md`: the `scorecard.json` contract the PBIP loads
+- `references/trend-storage.md`: opt-in Tier 2 Warehouse persistence + Tier 3 Rayfin portal
 - `references/export-formats.md`: Tier 1 formats
 - `references/assessment-workflow.md`: Phase 6 (local export) + Phase 7 (publish)
 - Power BI Report Authoring skill: https://learn.microsoft.com/en-us/power-bi/developer/agentic/power-bi-report-authoring-skill-overview
