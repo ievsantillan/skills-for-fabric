@@ -110,6 +110,10 @@ WHEN NOT MATCHED BY TARGET THEN
 
 > Fabric Warehouse supports a limited T-SQL surface. Validate `MERGE` / `OPENJSON` availability against the current [Warehouse T-SQL surface area](https://learn.microsoft.com/en-us/fabric/data-warehouse/tsql-surface-area) before relying on them; if `MERGE` is unavailable, fall back to `DELETE` + `INSERT` of the current-state row inside a transaction. Delegate all of this to `sqldw-authoring-cli`.
 
+### Reading a previous scorecard back (for re-assessment)
+
+When the Warehouse is the retained system of record, a later run resolves `intake.previous_assessment` against it instead of a local folder. Read the most recent `AssessmentKey` for the scope, then reconstruct the previous `scorecard.json` shape from its `Assessments` / `Findings` / `Recommendations` / `Tradeoffs` rows (read-only `SELECT` via `sqldw-consumption-cli`; no write needed for the read-back). Feed that into the Phase 5 stable-ID match and the Phase 3-5 diff exactly as a local `scorecard.json` would. This is what lets a customer re-run 6 months later on a different machine and still get carry-forward and trend.
+
 ### Reporting on top
 
 Build a Direct Lake or import semantic model over these four tables (the same star schema as `references/export-pbip.md`, so the DAX measures and the 4 report pages carry over) and connect a Power BI report. This is the governed, multi-assessment version of the local PBIP: pillar-index trend lines, open Critical/High over time, age-of-finding from `FirstSeen`, and per-workspace or per-customer slicers.

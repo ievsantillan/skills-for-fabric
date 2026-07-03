@@ -34,8 +34,10 @@ output:
   export_formats: [markdown]  # add: excel, csv, word, html, pbip
   publish_to_fabric: false    # Phase 7 only; off by default
 
-previous_assessment_folder: <path or null>  # if set, triggers re-assessment / diff workflow
+previous_assessment: <path-to-previous-WAFAssessmentReport-folder | warehouse:<workspace>/<warehouse> | null>  # if set, triggers re-assessment / diff
 ```
+
+> **`previous_assessment`** is where the baseline to compare against lives. It is a local folder path by default, or a reference to the opt-in Tier 2 Warehouse (`references/trend-storage.md`) when history is kept there. See the retention guidance in `references/assessment-report-template.md`. (Formerly `previous_assessment_folder`; a plain folder path still works.)
 
 > **Our convention, not Microsoft prescription.** Microsoft Learn does not prescribe an intake form. This template exists so assessments are repeatable across runs and across teams.
 
@@ -166,7 +168,7 @@ Generate recommendations using the format documented in `common/FABRIC-WAF-CORE.
 
 **Dedup pass**: after all per-pillar scoring is complete, merge recommendations that target the same action (e.g., "right-size capacity" surfaced from both Cost and Performance). The merged row's `pillars` field lists every pillar that surfaced it.
 
-**Stable ID assignment (after dedup)**: compute each recommendation's `stable_key` (`<primary-pillar>::<principle-slug>::<normalized-action-slug>`). If `intake.previous_assessment_folder` is set, load its `scorecard.json`, match by `stable_key`, and reuse the prior `id` and `first_seen` and carry forward `status` / `risk_accepted`; assign fresh per-pillar IDs only to new `stable_key`s. Full algorithm: `references/scorecard-schema.md`.
+**Stable ID assignment (after dedup)**: compute each recommendation's `stable_key` (`<primary-pillar>::<principle-slug>::<normalized-action-slug>`). If `intake.previous_assessment` is set, load its `scorecard.json`, match by `stable_key`, and reuse the prior `id` and `first_seen` and carry forward `status` / `risk_accepted`; assign fresh per-pillar IDs only to new `stable_key`s. Full algorithm: `references/scorecard-schema.md`.
 
 ---
 
@@ -182,20 +184,26 @@ This phase touches local disk only. No mutation of Fabric tenant state.
 
 ## Phase 7: Publish (optional, opt-in per session)
 
-Only runs when `output.publish_to_fabric == true` and the user explicitly confirms in this session.
+Only runs when `output.publish_to_fabric == true` and the user explicitly confirms in this session. This is the **only** workflow step that mutates Fabric tenant state. A WAF PBIP contains both a semantic model and a report, so publishing is a two-part sequence (all via `az rest` against the Fabric REST API, no PBIX / Desktop):
 
-- Delegates the upload to `powerbi-report-management` for the PBIP project folder.
-- Uploads to the target Fabric workspace ID confirmed in intake.
-- This is the **only** workflow step that mutates Fabric tenant state. Documented in the read-only boundary in `common/FABRIC-WAF-CORE.md`.
+1. **Deploy the semantic model** to the target workspace via `semantic-model-authoring` (from the PBIP `.SemanticModel` / TMDL). The report cannot bind until its model exists in the workspace.
+2. **Create or update the report** bound to that model via `powerbi-report-management`: `POST /v1/workspaces/{workspaceId}/reports` (create) or `.../reports/{reportId}/updateDefinition?format=PBIR` (update), from the PBIP `.Report` (PBIR). The skill verifies PBIR entity/query references match the deployed model's table names before upload.
+3. **Refresh** the semantic model so the report shows data (delegate to `semantic-model-authoring`).
+
+Notes:
+
+- Target workspace ID is the one confirmed in intake; the executing identity needs workspace **write** (Contributor/Member) on a capacity-backed workspace.
+- PBIR format only (PBIR-Legacy unsupported). `create` / `updateDefinition` may return `202 Accepted`: poll the long-running operation to completion before the next step.
+- Documented in the read-only boundary in `common/FABRIC-WAF-CORE.md`; delegates: `semantic-model-authoring` (model deploy + refresh), `powerbi-report-management` (report item).
 
 ---
 
 ## Re-assessment / diff workflow
 
-When `intake.previous_assessment_folder` points to an existing `WAFAssessmentReport-YYYY-MM-DD/` folder:
+When `intake.previous_assessment` is set (a prior `WAFAssessmentReport-YYYY-MM-DD/` folder, or the opt-in Tier 2 Warehouse when history is kept there):
 
 1. Run Phases 1-5 as usual.
-2. Load the previous run's **`scorecard.json`** (deterministic; do not re-parse the previous markdown). Build the `stable_key` map used for ID reuse and status/risk carry-forward (Phase 5).
+2. Load the previous run's **`scorecard.json`** deterministically (from the folder, or reconstructed from the Tier 2 Warehouse rows per `references/trend-storage.md`); do not re-parse the previous markdown. Build the `stable_key` map used for ID reuse and status/risk carry-forward (Phase 5).
 3. Compute deltas:
    - **Closed gaps**: previously `Gap` or `Partial`, now `Met`
    - **New gaps**: previously `Met`, now `Gap` or `Partial`

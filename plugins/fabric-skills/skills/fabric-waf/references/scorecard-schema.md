@@ -120,7 +120,7 @@ The problem: if IDs are assigned by position each run, `R001` can mean different
 
 **ID assignment procedure (Phase 5, after dedup):**
 
-1. If `previous_assessment_folder` is set, load its `scorecard.json` and build a map `stable_key -> {id, theme_id, first_seen, status, risk_accepted}`.
+1. If `previous_assessment` is set, load its `scorecard.json` and build a map `stable_key -> {id, theme_id, first_seen, status, risk_accepted}`.
 2. For each current recommendation, compute `stable_key`. If it exists in the map, **reuse the previous `id`, `theme_id`, and `first_seen`** (so IDs are stable), and carry `status` / `risk_accepted` forward (see below).
 3. For new `stable_key`s, assign the next free per-pillar ID (`OR004`, ...), set `first_seen` = this run's date.
 4. Keep an `id-map.json` (or a table in `scorecard.json`) if you later split or merge themes, so alias anchors in `recommendations.md` still resolve.

@@ -7,8 +7,8 @@ PBIP generation is **local only** (writes files to disk). Publishing to a Fabric
 Authoring is delegated to:
 
 - `powerbi-report-authoring`: PBIP / PBIR file generation
-- `semantic-model-authoring`: TMDL / semantic model project generation
-- `powerbi-report-management`: ONLY in optional Phase 7 publish
+- `semantic-model-authoring`: TMDL / semantic model project generation (local), and model deploy + refresh in optional Phase 7 publish
+- `powerbi-report-management`: report item create / updateDefinition, ONLY in optional Phase 7 publish
 
 Optionally, for the page layout brief, `powerbi-report-design` (archetype, chart choice, color, layout) and `powerbi-report-planning` (guided requirements to build) can feed the authoring step. All four skills ship in the `powerbi-authoring` plugin.
 
@@ -238,10 +238,17 @@ This mirrors the Report Authoring skill's own generate -> validate -> screenshot
 
 ## Publishing to Fabric (Phase 7, opt-in only)
 
-Publishing the validated PBIP is a separate step that requires explicit per-session user confirmation. It delegates to `powerbi-report-management` (Fabric REST CRUD via `az rest`). Two things to confirm before publish:
+Publishing the validated PBIP is a separate step that requires explicit per-session user confirmation. A PBIP contains **both** a semantic model and a report, so publishing is a model-then-report-then-refresh sequence (all via `az rest` against the Fabric REST API, no PBIX / Desktop):
 
-- **Semantic model binding**: PBIR entity and query references must match the target workspace semantic model table names. The management skill verifies bindings before upload; a mismatch fails the publish.
-- **Long-running operations**: create and updateDefinition can return `202 Accepted`. Poll the operation to completion before proceeding.
+1. **Deploy the semantic model** into the target workspace via `semantic-model-authoring` (from the `.SemanticModel` / TMDL). The report cannot bind until its model exists in the workspace.
+2. **Create or update the report** bound to that model via `powerbi-report-management`: `POST /v1/workspaces/{workspaceId}/reports` (create) or `.../reports/{reportId}/updateDefinition?format=PBIR` (update), from the `.Report` (PBIR).
+3. **Refresh** the semantic model via `semantic-model-authoring` so the report shows data.
+
+Confirm before publishing:
+
+- **Permission + capacity**: workspace write (Contributor/Member) on a capacity-backed workspace.
+- **Semantic model binding**: PBIR entity and query references must match the deployed model's table names. `powerbi-report-management` verifies bindings before upload; a mismatch fails the publish.
+- **Format + long-running operations**: PBIR format only (PBIR-Legacy unsupported); `create` / `updateDefinition` can return `202 Accepted`, so poll the operation to completion before the next step.
 
 ## What this skill does NOT do (v1)
 

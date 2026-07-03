@@ -39,6 +39,14 @@ history.csv                         # Same columns, for spreadsheet charts and T
 
 Both trend files are index/count only (no UPNs or GUIDs) so they are safe to retain long-term even when the full `WAFAssessmentReport-*/` folders (which may contain PII) are not. Format and the `scorecard.json` schema: `references/scorecard-schema.md`.
 
+### Retention: where history lives for a re-run months later
+
+By default, history is **local files**: the dated `WAFAssessmentReport-*/` folders (each holding `scorecard.json`) plus the parent `WAFAssessmentHistory.md` / `history.csv`. Because the repository `.gitignore` excludes `WAFAssessmentReport-*/`, history is deliberately NOT in source control. So a re-assessment months later works only if the customer retained the previous run. Guidance:
+
+- **Minimum (local path):** keep the previous run's folder, or at least its **redacted `scorecard.json`**, in a private, access-controlled location (OneDrive / SharePoint / a private repo / blob storage). Do NOT commit unredacted folders to a public repo (PII). The re-run sets `previous_assessment` to that path.
+- **Recommended (durable, governed, multi-user):** persist each run to the opt-in **Tier 2 Fabric Warehouse** (see `references/trend-storage.md`). The Warehouse becomes the system of record, so a re-run 6 months later reads the previous scorecard from it, independent of any one person's laptop, and the whole series (not just the last run) is available for trend.
+- The redacted `scorecard.json` and `history.csv` carry no PII, so they are the safe things to retain indefinitely even when full report folders are deleted under a retention policy.
+
 Mode scaling:
 
 - `e2e`: full folder
